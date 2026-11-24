@@ -41,7 +41,7 @@ interface OverviewDeskProps {
   telemetry: Record<FeedTelemetry['id'], FeedTelemetry>;
   paperOrders: PaperExecutionOrder[];
   onSelectPairAndNavigate: (perpSymbol: string, tab: 'basis' | 'risk') => void;
-  onNavigateTab: (tab: 'overview' | 'basis' | 'risk' | 'ssi') => void;
+  onNavigateTab: (tab: 'overview' | 'basis' | 'risk' | 'ssi' | 'diag') => void;
   onOpenTelemetry: () => void;
   onClosePaperOrder: (id: string) => void;
   onResetPaperOrders: () => void;
@@ -593,8 +593,23 @@ export function OverviewDesk({
               {paperMetrics.enriched.map((row) => (
                 <tr key={row.id} className="hover:bg-slate-800/25">
                   <td className="px-4 py-2.5">
-                    <div className="font-semibold text-slate-200">{row.id}</div>
-                    <div className="text-[10px] text-slate-500">{formatTimeUtc(row.createdAtIso)}</div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-slate-200">{row.id}</span>
+                      {row.executionChannel === 'EIP712_WALLET_SIGNED' && (
+                        <span className="rounded border border-emerald-500/35 bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-300">
+                          EIP-712 WALLET
+                        </span>
+                      )}
+                      {row.executionChannel === 'EIP712_DRY_RUN' && (
+                        <span className="rounded border border-sky-500/35 bg-sky-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-sky-300">
+                          EIP-712 VERIFIED
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      {row.clOrdId ? `${row.clOrdId} • ` : ''}
+                      {formatTimeUtc(row.createdAtIso)}
+                    </div>
                   </td>
                   <td className="px-3 py-2.5 font-sans">
                     <div className="font-medium text-slate-100">

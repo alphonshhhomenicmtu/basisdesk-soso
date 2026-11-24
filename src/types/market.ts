@@ -169,6 +169,46 @@ export interface SoSoValueDataset {
   news: SoSoNewsItem[];
 }
 
+export interface KlineBar {
+  t: number; // open timestamp (ms)
+  o: string;
+  h: string;
+  l: string;
+  c: string;
+  v: string;
+  q: string;
+  n: number;
+}
+
+export interface HistoricalKlineBundle {
+  perpSymbol: string;
+  spotSymbol: string;
+  interval: '4h';
+  source: 'LIVE_REST' | 'SNAPSHOT' | 'SYNTHETIC';
+  fetchedAtIso: string;
+  latencyMs: number | null;
+  perpBars: KlineBar[];
+  spotBars: KlineBar[];
+}
+
+export type SodexNetwork = 'testnet' | 'mainnet';
+export type SodexChainId = 138565 | 286623;
+
+export interface DiagProbeResult {
+  id: string;
+  label: string;
+  pillar: 'SoDEX' | 'ValueChain' | 'SoSoValue' | 'EIP-712';
+  endpoint: string;
+  method: 'GET' | 'POST' | 'WS' | 'LOCAL';
+  ok: boolean;
+  statusLabel: string;
+  httpStatus: number | null;
+  latencyMs: number;
+  checkedAtIso: string;
+  summary: string;
+  rawPreview: string;
+}
+
 export interface MarketSnapshotPayload {
   schemaVersion: number;
   generatedAt: string;
@@ -191,6 +231,7 @@ export interface MarketSnapshotPayload {
     perps: Record<string, OrderBookSnapshot>;
     spot: Record<string, OrderBookSnapshot>;
   };
+  klines30d?: Record<string, { perp: KlineBar[]; spot: KlineBar[] }>;
   sosovalue: SoSoValueDataset;
 }
 
@@ -236,4 +277,10 @@ export interface PaperExecutionOrder {
   guardrailStatus: 'PASS' | 'WARN';
   status: 'OPEN' | 'CLOSED';
   notes: string;
+  executionChannel?: 'PAPER' | 'EIP712_DRY_RUN' | 'EIP712_WALLET_SIGNED';
+  eip712Network?: SodexNetwork;
+  eip712Signer?: string;
+  eip712Digest?: string;
+  clOrdId?: string;
+  typedSignaturePreview?: string;
 }

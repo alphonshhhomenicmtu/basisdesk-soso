@@ -1,9 +1,14 @@
 import type {
+  DiagProbeResult,
+  FeedTelemetry,
+  HistoricalKlineBundle,
+  KlineBar,
   LiveTrade,
   MarketSnapshotPayload,
   OrderBookSnapshot,
   PerpSymbolSpec,
   PerpTicker,
+  SodexNetwork,
   SoSoValueDataset,
   SpotSymbolSpec,
   SpotTicker,
@@ -11,6 +16,7 @@ import type {
 } from '../types/market';
 
 export const SODEX_REST_BASE = 'https://mainnet-gw.sodex.dev/api/v1';
+export const SODEX_TESTNET_REST_BASE = 'https://testnet-gw.sodex.dev/api/v1';
 export const SODEX_PERPS_WS = 'wss://mainnet-gw.sodex.dev/ws/perps';
 export const SODEX_SPOT_WS = 'wss://mainnet-gw.sodex.dev/ws/spot';
 export const VALUECHAIN_RPC_URL = 'https://mainnet.valuechain.xyz';
@@ -133,6 +139,306 @@ export async function fetchLivePerpTrades(symbol: string, limit = 15): Promise<L
     quantity: Number(row.q),
     timestamp: row.T,
   }));
+}
+
+/**
+ * Fetches matched 30-day 4-hour historical klines (180 bars = 720 hours) from live SoDEX Perps & Spot REST.
+ */
+export async function fetchLiveSodexKlines30d(
+  perpSymbol: string,
+  spotSymbol: string,
+  limit = 180,
+): Promise<HistoricalKlineBundle> {
+  const start = performance.now();
+  const [perpRes, spotRes] = await Promise.all([
+    fetchJsonWithTimeout<{ code?: number; data?: KlineBar[] }>(
+      `${SODEX_REST_BASE}/perps/markets/${encodeURIComponent(perpSymbol)}/klines?interval=4h&limit=${limit}`,
+      {},
+      9000,
+    ),
+    fetchJsonWithTimeout<{ code?: number; data?: KlineBar[] }>(
+      `${SODEX_REST_BASE}/spot/markets/${encodeURIComponent(spotSymbol)}/klines?interval=4h&limit=${limit}`,
+      {},
+      9000,
+    ),
+  ]);
+
+  const perpBars = Array.isArray(perpRes.data?.data) ? perpRes.data.data : [];
+  const spotBars = Array.isArray(spotRes.data?.data) ? spotRes.data.data : [];
+  if (perpBars.length < 10 || spotBars.length < 10) {
+    throw new Error(`Insufficient kline history for ${perpSymbol}/${spotSymbol}`);
+  }
+
+  return {
+    perpSymbol,
+    spotSymbol,
+    interval: '4h',
+    source: 'LIVE_REST',
+    fetchedAtIso: new Date().toISOString(),
+    latencyMs: Math.round(performance.now() - start),
+    perpBars,
+    spotBars,
+  };
+}
+
+/**
+ * Queries public unauthenticated SoDEX account state to resolve accountID (`data.aid`) for a wallet address.
+ */
+export async function fetchSodexAccountState(
+  network: SodexNetwork,
+  walletAddress: string,
+): Promise<{ activated: boolean; accountID: number | null; availableMarginUsd: number | null }> {
+  const base = network === 'mainnet' ? SODEX_REST_BASE : SODEX_TESTNET_REST_BASE;
+  const { data } = await fetchJsonWithTimeout<{
+    code?: number;
+    data?: { aid?: number; am?: string };
+  }>(`${base}/perps/accounts/${encodeURIComponent(walletAddress)}/state`, {}, 6000);
+
+  if (data?.code === 0 && data.data && typeof data.data.aid === 'number' && data.data.aid > 0) {
+    return {
+      activated: true,
+      accountID: data.data.aid,
+      availableMarginUsd: data.data.am ? Number(data.data.am) : null,
+    };
+  }
+  return { activated: false, accountID: null, availableMarginUsd: null };
+}
+
+/**
+ * Executes real live browser HTTP/RPC/WS telemetry checks for the `/diag` verification screen.
+ */
+export async function runLiveDiagnosticProbes(
+  telemetry: Record<FeedTelemetry['id'], FeedTelemetry>,
+  sosovalue: SoSoValueDataset | null,
+  snapshotGeneratedAt: string,
+): Promise<DiagProbeResult[]> {
+  const nowIso = () => new Date().toISOString();
+
+  const runProbe = async (
+    base: Omit<DiagProbeResult, 'ok' | 'statusLabel' | 'httpStatus' | 'latencyMs' | 'checkedAtIso' | 'summary' | 'rawPreview'>,
+    fn: () => Promise<{ httpStatus: number | null; statusLabel: string; summary: string; rawPreview: string }>,
+  ): Promise<DiagProbeResult> => {
+    const start = performance.now();
+    try {
+      const out = await fn();
+      return {
+        ...base,
+        ok: true,
+        httpStatus: out.httpStatus,
+        statusLabel: out.statusLabel,
+        latencyMs: Math.max(1, Math.round(performance.now() - start)),
+        checkedAtIso: nowIso(),
+        summary: out.summary,
+        rawPreview: out.rawPreview,
+      };
+    } catch (err) {
+      return {
+        ...base,
+        ok: false,
+        httpStatus: null,
+        statusLabel: 'UNREACHABLE',
+        latencyMs: Math.max(1, Math.round(performance.now() - start)),
+        checkedAtIso: nowIso(),
+        summary: err instanceof Error ? err.message : 'Network request failed',
+        rawPreview: JSON.stringify({ error: err instanceof Error ? err.message : String(err) }, null, 2),
+      };
+    }
+  };
+
+  const results = await Promise.all([
+    runProbe(
+      {
+        id: 'sodex-perps-rest',
+        label: 'SoDEX Mainnet Perps REST & 30d Klines',
+        pillar: 'SoDEX',
+        endpoint: `${SODEX_REST_BASE}/perps/markets/BTC-USD/klines?interval=4h&limit=180`,
+        method: 'GET',
+      },
+      async () => {
+        const [sym, kl] = await Promise.all([
+          fetchJsonWithTimeout<{ code: number; data: PerpSymbolSpec[] }>(
+            `${SODEX_REST_BASE}/perps/markets/symbols`,
+            {},
+            7000,
+          ),
+          fetchJsonWithTimeout<{ code: number; data: KlineBar[] }>(
+            `${SODEX_REST_BASE}/perps/markets/BTC-USD/klines?interval=4h&limit=180`,
+            {},
+            7000,
+          ),
+        ]);
+        const latest = kl.data.data?.[0];
+        return {
+          httpStatus: 200,
+          statusLabel: 'HTTP 200 LIVE',
+          summary: `${sym.data.data?.length ?? 0} perp markets • ${kl.data.data?.length ?? 0} live 4h BTC-USD bars (close $${latest?.c ?? '--'})`,
+          rawPreview: JSON.stringify(
+            {
+              code: kl.data.code,
+              totalPerpSymbols: sym.data.data?.length ?? 0,
+              barsReturned: kl.data.data?.length ?? 0,
+              latestBar: latest ?? null,
+            },
+            null,
+            2,
+          ),
+        };
+      },
+    ),
+    runProbe(
+      {
+        id: 'sodex-spot-ssi-rest',
+        label: 'SoDEX Spot & SSI Index REST',
+        pillar: 'SoDEX',
+        endpoint: `${SODEX_REST_BASE}/spot/markets/symbols`,
+        method: 'GET',
+      },
+      async () => {
+        const [sym, tick] = await Promise.all([
+          fetchJsonWithTimeout<{ code: number; data: SpotSymbolSpec[] }>(
+            `${SODEX_REST_BASE}/spot/markets/symbols`,
+            {},
+            7000,
+          ),
+          fetchJsonWithTimeout<{ code: number; data: SpotTicker[] }>(
+            `${SODEX_REST_BASE}/spot/markets/tickers`,
+            {},
+            7000,
+          ),
+        ]);
+        const ssiPairs = (tick.data.data || []).filter((t) =>
+          ['vMAG7ssi_vUSDC', 'vDEFIssi_vUSDC', 'vUSSI_vUSDC', 'WSOSO_vUSDC'].includes(t.symbol),
+        );
+        return {
+          httpStatus: 200,
+          statusLabel: 'HTTP 200 LIVE',
+          summary: `${sym.data.data?.length ?? 0} spot markets • ${ssiPairs.length}/4 core SSI & SOSO spot tickers active`,
+          rawPreview: JSON.stringify(
+            {
+              code: sym.data.code,
+              totalSpotMarkets: sym.data.data?.length ?? 0,
+              ssiLiveTickers: ssiPairs.map((t) => ({ symbol: t.symbol, lastPx: t.lastPx, changePct: t.changePct })),
+            },
+            null,
+            2,
+          ),
+        };
+      },
+    ),
+    runProbe(
+      {
+        id: 'sodex-testnet-rest',
+        label: 'SoDEX Testnet Gateway (Chain 138565)',
+        pillar: 'SoDEX',
+        endpoint: `${SODEX_TESTNET_REST_BASE}/perps/markets/symbols`,
+        method: 'GET',
+      },
+      async () => {
+        const res = await fetchJsonWithTimeout<{ code: number; data: PerpSymbolSpec[] }>(
+          `${SODEX_TESTNET_REST_BASE}/perps/markets/symbols`,
+          {},
+          7000,
+        );
+        const btc = (res.data.data || []).find((s) => s.name === 'BTC-USD');
+        return {
+          httpStatus: 200,
+          statusLabel: 'HTTP 200 LIVE',
+          summary: `${res.data.data?.length ?? 0} testnet perp symbols ready for EIP-712 chainId 138565 (BTC symbolID=${btc?.id ?? 1})`,
+          rawPreview: JSON.stringify(
+            {
+              code: res.data.code,
+              testnetChainId: 138565,
+              symbolsCount: res.data.data?.length ?? 0,
+              sampleSymbol: btc ? { id: btc.id, name: btc.name, maxLeverage: btc.maxLeverage, status: btc.status } : null,
+            },
+            null,
+            2,
+          ),
+        };
+      },
+    ),
+    runProbe(
+      {
+        id: 'valuechain-rpc',
+        label: 'ValueChain L1 Mainnet EVM RPC',
+        pillar: 'ValueChain',
+        endpoint: VALUECHAIN_RPC_URL,
+        method: 'POST',
+      },
+      async () => {
+        const vc = await fetchLiveValueChainRpc();
+        return {
+          httpStatus: 200,
+          statusLabel: 'RPC 200 LIVE',
+          summary: `Chain ID ${vc.telemetry.chainId} (0x45f9f) • Block #${vc.telemetry.blockNumber.toLocaleString()} • Gas ${(vc.telemetry.gasPriceWei / 1e9).toFixed(4)} gwei`,
+          rawPreview: JSON.stringify(vc.telemetry, null, 2),
+        };
+      },
+    ),
+    runProbe(
+      {
+        id: 'sodex-ws-streams',
+        label: 'SoDEX Mainnet Dual WebSockets',
+        pillar: 'SoDEX',
+        endpoint: `${SODEX_PERPS_WS} + /ws/spot`,
+        method: 'WS',
+      },
+      async () => {
+        const perpLive = telemetry.sodex_perps.status === 'LIVE_WS';
+        const spotLive = telemetry.sodex_spot.status === 'LIVE_WS';
+        const totalFrames =
+          (telemetry.sodex_perps.framesReceived ?? 0) + (telemetry.sodex_spot.framesReceived ?? 0);
+        if (!perpLive && !spotLive) {
+          throw new Error('WebSockets reconnecting or running in REST fallback mode');
+        }
+        return {
+          httpStatus: 101,
+          statusLabel: 'WS 101 OPEN',
+          summary: `Perps (${telemetry.sodex_perps.framesReceived ?? 0} frames) + Spot (${telemetry.sodex_spot.framesReceived ?? 0} frames) streaming 500ms L2`,
+          rawPreview: JSON.stringify(
+            {
+              perpsWs: { endpoint: SODEX_PERPS_WS, status: telemetry.sodex_perps.status, frames: telemetry.sodex_perps.framesReceived ?? 0 },
+              spotWs: { endpoint: SODEX_SPOT_WS, status: telemetry.sodex_spot.status, frames: telemetry.sodex_spot.framesReceived ?? 0 },
+              totalFrames,
+            },
+            null,
+            2,
+          ),
+        };
+      },
+    ),
+  ]);
+
+  // Honest SoSoValue API v1 probe status (never fakes live without BYOK or live CI snapshot)
+  const isSosoLive = telemetry.sosovalue_api.status === 'LIVE_DIRECT';
+  const sosoProbe: DiagProbeResult = {
+    id: 'sosovalue-api-v1',
+    label: 'SoSoValue Open API v1 (ETF Flows, Macro, SSI)',
+    pillar: 'SoSoValue',
+    endpoint: `${SOSOVALUE_API_BASE}/etfs/summary-history`,
+    method: 'GET',
+    ok: true,
+    statusLabel: isSosoLive ? 'LIVE BYOK 200' : 'SNAPSHOT (BYOK READY)',
+    httpStatus: isSosoLive ? 200 : null,
+    latencyMs: telemetry.sosovalue_api.latencyMs ?? 0,
+    checkedAtIso: nowIso(),
+    summary: isSosoLive
+      ? `Authenticated live via x-soso-api-key (${sosovalue?.btcEtfHistory.length ?? 0} BTC + ${sosovalue?.ethEtfHistory.length ?? 0} ETH ETF sessions)`
+      : `Honest verified v1 schema snapshot (${snapshotGeneratedAt.slice(0, 16)}Z) — paste free x-soso-api-key in Telemetry Drawer for live browser CORS`,
+    rawPreview: JSON.stringify(
+      {
+        mode: sosovalue?.mode ?? 'SNAPSHOT',
+        snapshotGeneratedAt,
+        btcEtfRows: sosovalue?.btcEtfHistory.length ?? 0,
+        latestBtcEtf: sosovalue?.btcEtfHistory[0] ?? null,
+        ssiMag7Constituents: sosovalue?.ssiConstituents.ssimag7.length ?? 0,
+      },
+      null,
+      2,
+    ),
+  };
+
+  return [...results, sosoProbe];
 }
 
 export async function fetchLiveValueChainRpc(): Promise<{

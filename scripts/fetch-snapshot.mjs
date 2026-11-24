@@ -266,13 +266,29 @@ async function main() {
   ]);
 
   const realizedVol = {};
+  const klines30d = {};
   await Promise.all(
-    ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD'].map(async (sym) => {
+    [
+      ['BTC-USD', 'vBTC_vUSDC'],
+      ['ETH-USD', 'vETH_vUSDC'],
+      ['SOL-USD', 'vSOL_vUSDC'],
+      ['BNB-USD', 'vBNB_vUSDC'],
+    ].map(async ([perpSym, spotSym]) => {
       try {
-        const k = await fetchJson(`${SODEX_BASE}/perps/markets/${sym}/klines?interval=1h&limit=48`);
-        realizedVol[sym] = computeRealizedVolAnnualized(k.data);
+        const [k1h, kPerp4h, kSpot4h] = await Promise.all([
+          fetchJson(`${SODEX_BASE}/perps/markets/${perpSym}/klines?interval=1h&limit=48`),
+          fetchJson(`${SODEX_BASE}/perps/markets/${perpSym}/klines?interval=4h&limit=180`),
+          fetchJson(`${SODEX_BASE}/spot/markets/${spotSym}/klines?interval=4h&limit=180`),
+        ]);
+        realizedVol[perpSym] = computeRealizedVolAnnualized(k1h.data);
+        if (Array.isArray(kPerp4h.data) && Array.isArray(kSpot4h.data)) {
+          klines30d[perpSym] = {
+            perp: kPerp4h.data,
+            spot: kSpot4h.data,
+          };
+        }
       } catch {
-        realizedVol[sym] = 0.65;
+        realizedVol[perpSym] = 0.65;
       }
     }),
   );
@@ -308,6 +324,7 @@ async function main() {
       tickers: spotTickers,
     },
     orderbooks,
+    klines30d,
     sosovalue,
   };
 

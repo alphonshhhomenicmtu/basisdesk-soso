@@ -25,6 +25,8 @@ describe('Hourly Market Snapshot Artifact Integrity', () => {
     expect(snap.orderbooks.spot['vMAG7ssi_vUSDC']?.asks.length).toBeGreaterThan(0);
     expect(snap.sosovalue.btcEtfHistory.length).toBeGreaterThanOrEqual(5);
     expect(snap.sosovalue.ssiConstituents.ssimag7.length).toBeGreaterThanOrEqual(5);
+    expect(snap.klines30d?.['BTC-USD']?.perp.length).toBeGreaterThanOrEqual(100);
+    expect(snap.klines30d?.['BTC-USD']?.spot.length).toBeGreaterThanOrEqual(100);
   });
 });
 

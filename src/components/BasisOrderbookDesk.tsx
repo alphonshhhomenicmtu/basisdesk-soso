@@ -206,6 +206,13 @@ export function BasisOrderbookDesk({
       strategyType: 'DELTA_NEUTRAL_BASIS',
       symbol: activeOpp.perpSymbol,
       spotSymbol: activeOpp.spotSymbol,
+      perpSymbolId: perpSpec?.id ?? 1,
+      spotSymbolId: spotSpec?.id ?? 1,
+      perpPricePrecision: perpSpec?.pricePrecision ?? 1,
+      perpQuantityPrecision: perpSpec?.quantityPrecision ?? 4,
+      spotPricePrecision: spotSpec?.pricePrecision ?? 2,
+      spotQuantityPrecision: spotSpec?.quantityPrecision ?? 5,
+      executionMode,
       direction: 'LONG_SPOT_SHORT_PERP',
       notionalUsd,
       leverage,
@@ -550,7 +557,7 @@ export function BasisOrderbookDesk({
             </div>
 
             {/* Interactive Controls */}
-            <div className="mt-4 space-y-3.5">
+            <div className="mt-3 space-y-2.5">
               <div>
                 <div className="flex justify-between text-xs">
                   <span className="text-slate-400">Notional Size (Per Leg)</span>
@@ -692,10 +699,10 @@ export function BasisOrderbookDesk({
           <button
             type="button"
             onClick={handleStageTrade}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-sky-500 px-4 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-sky-400"
+            className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-sky-500 px-4 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-sky-400"
           >
             <Zap className="h-4 w-4" />
-            Stage Guarded Paper Carry Order
+            Stage &amp; Sign SoDEX EIP-712 / Paper Order
           </button>
         </div>
       </div>

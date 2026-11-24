@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { generateDeterministicFallbackKlines } from '../engine/backtest';
 import { buildBasisOpportunities, synthesizeDeskBrief } from '../engine/quant';
+import {
+  connectInjectedWallet,
+  detectInjectedProvider,
+} from '../engine/sodexEip712';
 import {
   fetchLiveOrderBook,
   fetchLivePerpTrades,
+  fetchLiveSodexKlines30d,
   fetchLiveSodexMarkets,
   fetchLiveSoSoValueDirect,
   fetchLiveValueChainRpc,
+  fetchSodexAccountState,
   loadBaselineSnapshot,
   SODEX_PERPS_WS,
   SODEX_REST_BASE,
@@ -16,12 +23,15 @@ import {
 } from '../services/feeds';
 import type {
   FeedTelemetry,
+  HistoricalKlineBundle,
+  KlineBar,
   LiveTrade,
   MarketSnapshotPayload,
   OrderBookSnapshot,
   PaperExecutionOrder,
   PerpSymbolSpec,
   PerpTicker,
+  SodexNetwork,
   SoSoValueDataset,
   SpotSymbolSpec,
   SpotTicker,
@@ -113,6 +123,26 @@ export function useDeskData(selectedPerpSymbol: string) {
   const [sosovalue, setSosovalue] = useState<SoSoValueDataset | null>(null);
   const [sosoError, setSosoError] = useState<string | null>(null);
   const [sosoConnecting, setSosoConnecting] = useState(false);
+
+  // 30-day Historical Klines cache (LIVE_REST > SNAPSHOT > SYNTHETIC)
+  const [snapshotKlines30d, setSnapshotKlines30d] = useState<
+    Record<string, { perp: KlineBar[]; spot: KlineBar[] }>
+  >({});
+  const [klinesBySymbol, setKlinesBySymbol] = useState<Record<string, HistoricalKlineBundle>>({});
+  const [klinesLoading, setKlinesLoading] = useState(false);
+
+  // Browser EIP-1193 wallet connection state (non-custodial, memory-only)
+  const [walletAddress, setWalletAddress] = useState<`0x${string}` | null>(null);
+  const [walletChainId, setWalletChainId] = useState<number | null>(null);
+  const [walletProviderLabel, setWalletProviderLabel] = useState<string>(() =>
+    detectInjectedProvider().label,
+  );
+  const [walletConnecting, setWalletConnecting] = useState(false);
+  const [walletError, setWalletError] = useState<string | null>(null);
+  const [sodexAccountIds, setSodexAccountIds] = useState<Record<SodexNetwork, number | null>>({
+    testnet: null,
+    mainnet: null,
+  });
 
   const [telemetry, setTelemetry] = useState<Record<FeedTelemetry['id'], FeedTelemetry>>({
     sodex_perps: {
@@ -206,6 +236,9 @@ export function useDeskData(selectedPerpSymbol: string) {
           setSpotTickers(baseline.spot.tickers);
           setPerpBooks(baseline.orderbooks.perps);
           setSpotBooks(baseline.orderbooks.spot);
+          if (baseline.klines30d) {
+            setSnapshotKlines30d(baseline.klines30d);
+          }
           setValueChain(baseline.valueChain);
           setSosovalue(baseline.sosovalue);
           updateTelemetry('sosovalue_api', {
@@ -393,6 +426,123 @@ export function useDeskData(selectedPerpSymbol: string) {
     };
   }, [selectedPerpSymbol, activeSpotSymbol]);
 
+  // Fetch live 30-day 4h SoDEX Perp & Spot klines for the selected pair (with honest SNAPSHOT/SYNTHETIC fallback)
+  const loadKlinesForPair = useCallback(
+    async (perpSym: string, spotSym: string, forceRefresh = false) => {
+      if (!forceRefresh && klinesBySymbol[perpSym]?.source === 'LIVE_REST') {
+        return;
+      }
+      setKlinesLoading(true);
+      try {
+        const liveBundle = await fetchLiveSodexKlines30d(perpSym, spotSym, 180);
+        setKlinesBySymbol((prev) => ({ ...prev, [perpSym]: liveBundle }));
+      } catch {
+        const snapPair = snapshotKlines30d[perpSym];
+        if (snapPair && snapPair.perp.length > 10 && snapPair.spot.length > 10) {
+          setKlinesBySymbol((prev) => ({
+            ...prev,
+            [perpSym]: {
+              perpSymbol: perpSym,
+              spotSymbol: spotSym,
+              interval: '4h',
+              source: 'SNAPSHOT',
+              fetchedAtIso: snapshotMeta.generatedAt,
+              latencyMs: null,
+              perpBars: snapPair.perp,
+              spotBars: snapPair.spot,
+            },
+          }));
+        } else {
+          const matchedTick = perpTickers.find((t) => t.symbol === perpSym);
+          const anchor = Number(matchedTick?.markPrice || matchedTick?.lastPx || 60000) || 60000;
+          const vol = realizedVol[perpSym] ?? 0.65;
+          const synth = generateDeterministicFallbackKlines(anchor, vol, 20261124, 180);
+          setKlinesBySymbol((prev) => ({
+            ...prev,
+            [perpSym]: {
+              perpSymbol: perpSym,
+              spotSymbol: spotSym,
+              interval: '4h',
+              source: 'SYNTHETIC',
+              fetchedAtIso: new Date().toISOString(),
+              latencyMs: null,
+              perpBars: synth.perpBars,
+              spotBars: synth.spotBars,
+            },
+          }));
+        }
+      } finally {
+        setKlinesLoading(false);
+      }
+    },
+    [klinesBySymbol, snapshotKlines30d, snapshotMeta.generatedAt, perpTickers, realizedVol],
+  );
+
+  useEffect(() => {
+    void loadKlinesForPair(selectedPerpSymbol, activeSpotSymbol);
+  }, [selectedPerpSymbol, activeSpotSymbol, loadKlinesForPair]);
+
+  const activeKlineBundle = useMemo<HistoricalKlineBundle | null>(() => {
+    if (klinesBySymbol[selectedPerpSymbol]) {
+      return klinesBySymbol[selectedPerpSymbol];
+    }
+    const snapPair = snapshotKlines30d[selectedPerpSymbol];
+    if (snapPair && snapPair.perp.length > 10 && snapPair.spot.length > 10) {
+      return {
+        perpSymbol: selectedPerpSymbol,
+        spotSymbol: activeSpotSymbol,
+        interval: '4h',
+        source: 'SNAPSHOT',
+        fetchedAtIso: snapshotMeta.generatedAt,
+        latencyMs: null,
+        perpBars: snapPair.perp,
+        spotBars: snapPair.spot,
+      };
+    }
+    return null;
+  }, [klinesBySymbol, snapshotKlines30d, selectedPerpSymbol, activeSpotSymbol, snapshotMeta.generatedAt]);
+
+  const connectWallet = useCallback(async () => {
+    setWalletConnecting(true);
+    setWalletError(null);
+    try {
+      const res = await connectInjectedWallet();
+      setWalletAddress(res.address);
+      setWalletChainId(res.chainId);
+      setWalletProviderLabel(res.providerLabel);
+      // Resolve live public SoDEX accountIDs on both testnet & mainnet (unauthenticated public state read)
+      const [testState, mainState] = await Promise.all([
+        fetchSodexAccountState('testnet', res.address).catch(() => ({
+          activated: false,
+          accountID: null,
+          availableMarginUsd: null,
+        })),
+        fetchSodexAccountState('mainnet', res.address).catch(() => ({
+          activated: false,
+          accountID: null,
+          availableMarginUsd: null,
+        })),
+      ]);
+      setSodexAccountIds({
+        testnet: testState.accountID,
+        mainnet: mainState.accountID,
+      });
+      setWalletConnecting(false);
+      return true;
+    } catch (err) {
+      setWalletError(err instanceof Error ? err.message : 'Unable to connect browser wallet');
+      setWalletConnecting(false);
+      return false;
+    }
+  }, []);
+
+  const disconnectWallet = useCallback(() => {
+    setWalletAddress(null);
+    setWalletChainId(null);
+    setWalletError(null);
+    setSodexAccountIds({ testnet: null, mainnet: null });
+  }, []);
+
   const connectSoSoValueKey = useCallback(
     async (apiKey: string) => {
       if (!sosovalue) return false;
@@ -476,5 +626,18 @@ export function useDeskData(selectedPerpSymbol: string) {
     addPaperOrder,
     closePaperOrder,
     resetPaperOrders,
+    activeKlineBundle,
+    klinesLoading,
+    refreshKlines30d: () => loadKlinesForPair(selectedPerpSymbol, activeSpotSymbol, true),
+    wallet: {
+      address: walletAddress,
+      chainId: walletChainId,
+      providerLabel: walletProviderLabel,
+      connecting: walletConnecting,
+      error: walletError,
+      sodexAccountIds,
+      connect: connectWallet,
+      disconnect: disconnectWallet,
+    },
   };
 }

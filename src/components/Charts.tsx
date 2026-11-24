@@ -1,3 +1,4 @@
+import type { BacktestEquityPoint } from '../engine/backtest';
 import type { FanChartPoint, HistogramBin } from '../engine/quant';
 import type { EtfDailyFlow, OrderBookSnapshot } from '../types/market';
 import { formatCompactUsd, formatPrice, formatSignedCompactUsd } from '../utils/format';
@@ -375,6 +376,183 @@ export function ReturnHistogramChart({
           </g>
         );
       })}
+    </svg>
+  );
+}
+
+export function HistoricalBacktestChart({
+  curve,
+  initialCapitalUsd,
+}: {
+  curve: BacktestEquityPoint[];
+  initialCapitalUsd: number;
+}) {
+  if (curve.length < 2) {
+    return (
+      <div className="flex h-64 items-center justify-center text-xs text-slate-500">
+        Loading 30-day SoDEX historical klines replay...
+      </div>
+    );
+  }
+
+  const W = 680;
+  const H = 268;
+  const padL = 60;
+  const padR = 16;
+  const padT = 16;
+  const basisStripH = 38;
+  const padB = 26;
+  const chartW = W - padL - padR;
+  const equityH = H - padT - basisStripH - padB - 10;
+  const basisTopY = padT + equityH + 10;
+
+  const allEquity = curve.flatMap((pt) => [pt.carryEquityUsd, pt.spotBenchmarkUsd]);
+  const rawMin = Math.min(initialCapitalUsd * 0.96, ...allEquity);
+  const rawMax = Math.max(initialCapitalUsd * 1.02, ...allEquity);
+  const eqSpan = Math.max(200, rawMax - rawMin);
+  const yMin = rawMin - eqSpan * 0.08;
+  const yMax = rawMax + eqSpan * 0.08;
+
+  const toX = (i: number) => padL + (i / Math.max(1, curve.length - 1)) * chartW;
+  const toY = (v: number) => padT + equityH - ((v - yMin) / (yMax - yMin)) * equityH;
+
+  const carryLine = curve
+    .map((pt, i) => `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)} ${toY(pt.carryEquityUsd).toFixed(1)}`)
+    .join(' ');
+  const carryArea = `${carryLine} L ${toX(curve.length - 1).toFixed(1)} ${(padT + equityH).toFixed(1)} L ${toX(0).toFixed(1)} ${(padT + equityH).toFixed(1)} Z`;
+
+  const spotLine = curve
+    .map((pt, i) => `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)} ${toY(pt.spotBenchmarkUsd).toFixed(1)}`)
+    .join(' ');
+
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => yMin + f * (yMax - yMin));
+  const maxAbsBasis = Math.max(12, ...curve.map((pt) => Math.abs(pt.basisBps)));
+  const basisZeroY = basisTopY + basisStripH / 2;
+  const liqPoint = curve.find((pt) => pt.isLiquidationBar);
+  const labelSkip = Math.max(1, Math.floor(curve.length / 6));
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="h-[268px] w-full select-none">
+      <defs>
+        <linearGradient id="carryReplayGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#10B981" stopOpacity="0.30" />
+          <stop offset="100%" stopColor="#10B981" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+
+      {/* Equity Grid */}
+      {yTicks.map((val, idx) => {
+        const y = toY(val);
+        return (
+          <g key={idx}>
+            <line
+              x1={padL}
+              y1={y}
+              x2={W - padR}
+              y2={y}
+              stroke="rgba(148,163,184,0.10)"
+              strokeDasharray="3 3"
+            />
+            <text
+              x={padL - 8}
+              y={y + 3}
+              textAnchor="end"
+              className="fill-slate-400 font-mono text-[9.5px]"
+            >
+              {formatCompactUsd(val)}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* Initial Capital Line */}
+      <line
+        x1={padL}
+        y1={toY(initialCapitalUsd)}
+        x2={W - padR}
+        y2={toY(initialCapitalUsd)}
+        stroke="rgba(148,163,184,0.40)"
+        strokeDasharray="4 4"
+      />
+
+      {/* Unhedged Spot Buy & Hold Benchmark */}
+      <path d={spotLine} fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeDasharray="4 3" />
+
+      {/* Delta-Neutral Basis Carry Equity */}
+      <path d={carryArea} fill="url(#carryReplayGrad)" />
+      <path d={carryLine} fill="none" stroke="#10B981" strokeWidth="2.2" />
+
+      {/* Liquidation Breach Marker (if triggered) */}
+      {liqPoint && (
+        <g>
+          <line
+            x1={toX(liqPoint.index)}
+            y1={padT}
+            x2={toX(liqPoint.index)}
+            y2={padT + equityH}
+            stroke="#F43F5E"
+            strokeWidth="1.2"
+            strokeDasharray="3 2"
+          />
+          <circle
+            cx={toX(liqPoint.index)}
+            cy={toY(liqPoint.carryEquityUsd)}
+            r="4.5"
+            fill="#F43F5E"
+            stroke="#080B10"
+            strokeWidth="1.5"
+          />
+        </g>
+      )}
+
+      {/* Historical Basis Spread Sub-Strip */}
+      <line
+        x1={padL}
+        y1={basisZeroY}
+        x2={W - padR}
+        y2={basisZeroY}
+        stroke="rgba(148,163,184,0.22)"
+      />
+      <text
+        x={padL - 8}
+        y={basisZeroY + 3}
+        textAnchor="end"
+        className="fill-slate-500 font-mono text-[8.5px]"
+      >
+        Basis
+      </text>
+      {curve.map((pt, i) => {
+        if (curve.length > 90 && i % 2 !== 0) return null;
+        const barH = Math.min(basisStripH / 2 - 2, (Math.abs(pt.basisBps) / maxAbsBasis) * (basisStripH / 2 - 2));
+        const x = toX(i);
+        const y = pt.basisBps >= 0 ? basisZeroY - barH : basisZeroY;
+        return (
+          <rect
+            key={pt.timestamp}
+            x={x - 1.5}
+            y={y}
+            width={3}
+            height={Math.max(1, barH)}
+            fill={pt.basisBps >= 0 ? '#38BDF8' : '#F59E0B'}
+            fillOpacity={0.72}
+          />
+        );
+      })}
+
+      {/* X Date Labels */}
+      {curve.map((pt, i) =>
+        i % labelSkip === 0 || i === curve.length - 1 ? (
+          <text
+            key={`x-${pt.index}`}
+            x={toX(i)}
+            y={H - 7}
+            textAnchor="middle"
+            className="fill-slate-500 font-mono text-[9px]"
+          >
+            {pt.dateLabel}
+          </text>
+        ) : null,
+      )}
     </svg>
   );
 }

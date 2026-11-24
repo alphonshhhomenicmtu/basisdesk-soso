@@ -15,6 +15,7 @@ import {
 import type {
   FeedTelemetry,
   SoSoValueDataset,
+  SpotSymbolSpec,
   SpotTicker,
   SsiConstituentWeight,
   ValueChainTelemetry,
@@ -25,10 +26,11 @@ import {
   formatPrice,
   formatUsd,
 } from '../utils/format';
-import type { StagedPaperTrade } from './Modals';
+import type { StagedPaperTrade, StagedSsiBatchLeg } from './Modals';
 import { TelemetryBadge } from './TelemetryBadge';
 
 interface SsiRebalancerDeskProps {
+  spotSymbols: SpotSymbolSpec[];
   spotTickers: SpotTicker[];
   valueChain: ValueChainTelemetry;
   sosovalue: SoSoValueDataset | null;
@@ -43,6 +45,7 @@ const USSI_TARGETS: SsiConstituentWeight[] = [
 ];
 
 export function SsiRebalancerDesk({
+  spotSymbols,
   spotTickers,
   valueChain,
   sosovalue,
@@ -106,10 +109,32 @@ export function SsiRebalancerDesk({
       var99Pct: 3.5,
     });
 
+    const specBySpot = new Map(spotSymbols.map((s) => [s.name, s]));
+    const activeSpotSpec = specBySpot.get(activePlan.spotMarketSymbol);
+    const ssiBatchLegs: StagedSsiBatchLeg[] = activePlan.legs
+      .filter((leg) => leg.action === 'BUY' || leg.action === 'SELL')
+      .map((leg, idx) => {
+        const sp = specBySpot.get(leg.spotPair);
+        return {
+          symbol: leg.symbol,
+          spotPair: leg.spotPair,
+          symbolID: sp?.id ?? idx + 1,
+          side: leg.action === 'BUY' ? 'BUY' : 'SELL',
+          price: leg.liveSpotPrice,
+          quantity: leg.tradeQty,
+          pricePrecision: sp?.pricePrecision ?? 2,
+          quantityPrecision: sp?.quantityPrecision ?? 4,
+        };
+      });
+
     onStagePaperTrade({
       strategyType: 'SSI_REBALANCE',
       symbol: activePlan.indexKey,
       spotSymbol: activePlan.spotMarketSymbol,
+      spotSymbolId: activeSpotSpec?.id ?? 1,
+      spotPricePrecision: activeSpotSpec?.pricePrecision ?? 4,
+      spotQuantityPrecision: activeSpotSpec?.quantityPrecision ?? 2,
+      executionMode: 'MAKER',
       direction: 'REBALANCE_BASKET',
       notionalUsd: Math.max(1000, Math.round(activePlan.totalTurnoverUsd)),
       leverage: 1,
@@ -121,6 +146,7 @@ export function SsiRebalancerDesk({
       liquidationBufferPct: 100,
       notes: `${activePlan.contractCallPreview.contract} rebalance (${activePlan.contractCallPreview.inTokensetCount} buys / ${activePlan.contractCallPreview.outTokensetCount} sells, ±${bufferBandPct}% buffer)`,
       guardrails,
+      ssiBatchLegs,
     });
   };
 
@@ -426,7 +452,7 @@ ${activePlan.legs
               className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-violet-500 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-violet-400"
             >
               <Zap className="h-4 w-4" />
-              Queue Guarded Paper Rebalance Order
+              Sign Multi-Leg batchNewOrder / Queue Rebalance
             </button>
           </div>
         </div>
