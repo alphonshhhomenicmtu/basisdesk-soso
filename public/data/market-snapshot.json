@@ -1,0 +1,3204 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-24T06:21:33.539Z",
+  "sodexSummary": {
+    "totalPerpMarkets": 107,
+    "totalSpotMarkets": 48,
+    "gateway": "https://mainnet-gw.sodex.dev/api/v1"
+  },
+  "valueChain": {
+    "chainId": 286623,
+    "blockNumber": 17316086,
+    "gasPriceWei": 2000000,
+    "rpcUrl": "https://mainnet.valuechain.xyz",
+    "explorerUrl": "https://main-scan.valuechain.xyz",
+    "capturedAt": "2026-11-24T06:21:33.538Z"
+  },
+  "perps": {
+    "symbols": [
+      {
+        "id": 7,
+        "name": "DOGE-USD",
+        "displayName": "DOGE-USD",
+        "baseCoin": "DOGE",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "1000000000000",
+        "openInterestCapUSD": "5000000",
+        "pricePrecision": 5,
+        "tickSize": "0.00001",
+        "minPrice": "0.00001",
+        "maxPrice": "0",
+        "quantityPrecision": 0,
+        "stepSize": "1",
+        "minQuantity": "1",
+        "maxQuantity": "100000000",
+        "marketMinQuantity": "1",
+        "marketMaxQuantity": "100000000",
+        "minNotional": "10",
+        "maxNotional": "2000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "2000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "100000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400100000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 12,
+        "name": "HYPE-USD",
+        "displayName": "HYPE-USD",
+        "baseCoin": "HYPE",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "1000000000",
+        "openInterestCapUSD": "10000000",
+        "pricePrecision": 3,
+        "tickSize": "0.001",
+        "minPrice": "0.001",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "1000000",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "1000000",
+        "minNotional": "10",
+        "maxNotional": "1000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "1000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "50000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400050000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 24,
+        "name": "AVAX-USD",
+        "displayName": "AVAX-USD",
+        "baseCoin": "AVAX",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "100000000000",
+        "openInterestCapUSD": "2000000",
+        "pricePrecision": 3,
+        "tickSize": "0.001",
+        "minPrice": "0.001",
+        "maxPrice": "0",
+        "quantityPrecision": 0,
+        "stepSize": "1",
+        "minQuantity": "1",
+        "maxQuantity": "100000",
+        "marketMinQuantity": "1",
+        "marketMaxQuantity": "100000",
+        "minNotional": "10",
+        "maxNotional": "1000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "1000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "50000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400050000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 1,
+        "name": "BTC-USD",
+        "displayName": "BTC-USD",
+        "baseCoin": "BTC",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "2000000",
+        "openInterestCapUSD": "200000000",
+        "pricePrecision": 0,
+        "tickSize": "1",
+        "minPrice": "1",
+        "maxPrice": "0",
+        "quantityPrecision": 5,
+        "stepSize": "0.00001",
+        "minQuantity": "0.00001",
+        "maxQuantity": "1000",
+        "marketMinQuantity": "0.00001",
+        "marketMaxQuantity": "1000",
+        "minNotional": "10",
+        "maxNotional": "4000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.025",
+        "maxLeverage": 40,
+        "initLeverage": 20,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "4000000",
+            "maintenanceMarginRate": "0.0125",
+            "maxLeverage": 40,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "100000000",
+            "maintenanceMarginRate": "0.02",
+            "maxLeverage": 25,
+            "maintenanceDeduction": "30000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "48030000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 9,
+        "name": "BNB-USD",
+        "displayName": "BNB-USD",
+        "baseCoin": "BNB",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "100000000",
+        "openInterestCapUSD": "3000000",
+        "pricePrecision": 1,
+        "tickSize": "0.1",
+        "minPrice": "0.1",
+        "maxPrice": "0",
+        "quantityPrecision": 3,
+        "stepSize": "0.001",
+        "minQuantity": "0.001",
+        "maxQuantity": "100000",
+        "marketMinQuantity": "0.001",
+        "marketMaxQuantity": "100000",
+        "minNotional": "10",
+        "maxNotional": "1000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "1000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "50000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400050000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 6,
+        "name": "SOL-USD",
+        "displayName": "SOL-USD",
+        "baseCoin": "SOL",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "1000000000",
+        "openInterestCapUSD": "30000000",
+        "pricePrecision": 2,
+        "tickSize": "0.01",
+        "minPrice": "0.01",
+        "maxPrice": "0",
+        "quantityPrecision": 3,
+        "stepSize": "0.001",
+        "minQuantity": "0.001",
+        "maxQuantity": "1000000",
+        "marketMinQuantity": "0.001",
+        "marketMaxQuantity": "1000000",
+        "minNotional": "10",
+        "maxNotional": "4000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.05",
+        "maxLeverage": 20,
+        "initLeverage": 20,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "4000000",
+            "maintenanceMarginRate": "0.025",
+            "maxLeverage": 20,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "100000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "450100000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 2,
+        "name": "ETH-USD",
+        "displayName": "ETH-USD",
+        "baseCoin": "ETH",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "100000000",
+        "openInterestCapUSD": "200000000",
+        "pricePrecision": 1,
+        "tickSize": "0.1",
+        "minPrice": "0.1",
+        "maxPrice": "0",
+        "quantityPrecision": 4,
+        "stepSize": "0.0001",
+        "minQuantity": "0.0001",
+        "maxQuantity": "10000",
+        "marketMinQuantity": "0.0001",
+        "marketMaxQuantity": "10000",
+        "minNotional": "10",
+        "maxNotional": "4000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.04",
+        "maxLeverage": 40,
+        "initLeverage": 20,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "4000000",
+            "maintenanceMarginRate": "0.0125",
+            "maxLeverage": 40,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "100000000",
+            "maintenanceMarginRate": "0.02",
+            "maxLeverage": 25,
+            "maintenanceDeduction": "30000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "48030000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 16,
+        "name": "UNI-USD",
+        "displayName": "UNI-USD",
+        "baseCoin": "UNI",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "1000000000",
+        "openInterestCapUSD": "2000000",
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 1,
+        "stepSize": "0.1",
+        "minQuantity": "0.1",
+        "maxQuantity": "10000000",
+        "marketMinQuantity": "0.1",
+        "marketMaxQuantity": "10000000",
+        "minNotional": "10",
+        "maxNotional": "1000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "1000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "50000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400050000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 5,
+        "name": "LINK-USD",
+        "displayName": "LINK-USD",
+        "baseCoin": "LINK",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "20000000000",
+        "openInterestCapUSD": "1000000",
+        "pricePrecision": 3,
+        "tickSize": "0.001",
+        "minPrice": "0.001",
+        "maxPrice": "0",
+        "quantityPrecision": 1,
+        "stepSize": "0.1",
+        "minQuantity": "0.1",
+        "maxQuantity": "1000000",
+        "marketMinQuantity": "0.1",
+        "marketMaxQuantity": "1000000",
+        "minNotional": "10",
+        "maxNotional": "1000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "1000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "50000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400050000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 23,
+        "name": "SUI-USD",
+        "displayName": "SUI-USD",
+        "baseCoin": "SUI",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "100000000000",
+        "openInterestCapUSD": "1000000",
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 1,
+        "stepSize": "0.1",
+        "minQuantity": "0.1",
+        "maxQuantity": "1000000",
+        "marketMinQuantity": "0.1",
+        "marketMaxQuantity": "1000000",
+        "minNotional": "10",
+        "maxNotional": "1000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "1000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "50000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400050000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 10,
+        "name": "ADA-USD",
+        "displayName": "ADA-USD",
+        "baseCoin": "ADA",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "45000000000",
+        "openInterestCapUSD": "2000000",
+        "pricePrecision": 5,
+        "tickSize": "0.00001",
+        "minPrice": "0.00001",
+        "maxPrice": "0",
+        "quantityPrecision": 1,
+        "stepSize": "0.1",
+        "minQuantity": "0.1",
+        "maxQuantity": "10000000",
+        "marketMinQuantity": "0.1",
+        "marketMaxQuantity": "10000000",
+        "minNotional": "10",
+        "maxNotional": "1000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "1000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "50000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400050000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 8,
+        "name": "XRP-USD",
+        "displayName": "XRP-USD",
+        "baseCoin": "XRP",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "100000000000",
+        "openInterestCapUSD": "3000000",
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 1,
+        "stepSize": "0.1",
+        "minQuantity": "0.1",
+        "maxQuantity": "10000000",
+        "marketMinQuantity": "0.1",
+        "marketMaxQuantity": "10000000",
+        "minNotional": "10",
+        "maxNotional": "2000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "2000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "100000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400100000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      },
+      {
+        "id": 15,
+        "name": "AAVE-USD",
+        "displayName": "AAVE-USD",
+        "baseCoin": "AAVE",
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "openInterestCap": "16000000",
+        "openInterestCapUSD": "2000000",
+        "pricePrecision": 2,
+        "tickSize": "0.01",
+        "minPrice": "0.01",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "1000000",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "1000000",
+        "minNotional": "10",
+        "maxNotional": "1000000",
+        "buyLimitUpRatio": "0.05",
+        "sellLimitDownRatio": "0.05",
+        "marketDeviationRatio": "0.1",
+        "maxLeverage": 10,
+        "initLeverage": 10,
+        "marginTiers": [
+          {
+            "maxNotionalValue": "1000000",
+            "maintenanceMarginRate": "0.05",
+            "maxLeverage": 10,
+            "maintenanceDeduction": "0"
+          },
+          {
+            "maxNotionalValue": "1000000000",
+            "maintenanceMarginRate": "0.1",
+            "maxLeverage": 5,
+            "maintenanceDeduction": "50000"
+          },
+          {
+            "maxNotionalValue": "200000000000",
+            "maintenanceMarginRate": "0.5",
+            "maxLeverage": 1,
+            "maintenanceDeduction": "400050000"
+          }
+        ],
+        "fundingInterval": 3600,
+        "interestRate": "0.0001",
+        "maxFundingRate": "0.04",
+        "minFundingRate": "-0.04",
+        "makerFee": "0.00012",
+        "takerFee": "0.0004",
+        "status": "TRADING"
+      }
+    ],
+    "tickers": [
+      {
+        "symbol": "LINK-USD",
+        "lastPx": "9.119",
+        "lastSz": "0.1",
+        "openPx": "8.891",
+        "highPx": "9.55",
+        "lowPx": "8.867",
+        "volume": "2921.1",
+        "quoteVolume": "26970.8698",
+        "vwap": "9.2331210160555955",
+        "change": "0.228",
+        "changePct": 2.56439095714768,
+        "askPx": "9.119",
+        "askSz": "196.4",
+        "bidPx": "9.118",
+        "bidSz": "216.6",
+        "openTime": 1795414878336,
+        "closeTime": 1795501278336,
+        "fundingRate": "0.0000047279509141",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "9.125",
+        "markPrice": "9.119",
+        "openInterest": "475.2"
+      },
+      {
+        "symbol": "BTC-USD",
+        "lastPx": "60534",
+        "lastSz": "0.06789",
+        "openPx": "61502",
+        "highPx": "64534",
+        "lowPx": "59434",
+        "volume": "3583.32905",
+        "quoteVolume": "222360914.49224",
+        "vwap": "62054.28287202371214",
+        "change": "-968",
+        "changePct": -1.57393255503886,
+        "askPx": "60534",
+        "askSz": "1.08391",
+        "bidPx": "60533",
+        "bidSz": "1.71493",
+        "openTime": 1795414890343,
+        "closeTime": 1795501290343,
+        "fundingRate": "0.0000097739503616",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "60560",
+        "markPrice": "60534",
+        "openInterest": "970.7837"
+      },
+      {
+        "symbol": "ETH-USD",
+        "lastPx": "1702.7",
+        "lastSz": "2.0384",
+        "openPx": "1723.6",
+        "highPx": "1843.2",
+        "lowPx": "1670",
+        "volume": "149591.3764",
+        "quoteVolume": "259339115.18376",
+        "vwap": "1733.6501703834847528",
+        "change": "-20.9",
+        "changePct": -1.21257832443722,
+        "askPx": "1702.4",
+        "askSz": "61.4604",
+        "bidPx": "1702.3",
+        "bidSz": "70.4814",
+        "openTime": 1795414890413,
+        "closeTime": 1795501290413,
+        "fundingRate": "0.000011207659574",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "1703.3",
+        "markPrice": "1702.3",
+        "openInterest": "35981.0412"
+      },
+      {
+        "symbol": "XRP-USD",
+        "lastPx": "0.953",
+        "lastSz": "1",
+        "openPx": "0.9419",
+        "highPx": "1.0242",
+        "lowPx": "0.9323",
+        "volume": "558824.5",
+        "quoteVolume": "544140.86682",
+        "vwap": "0.9737240704729302",
+        "change": "0.0111",
+        "changePct": 1.17846905191634,
+        "askPx": "0.953",
+        "askSz": "14762.3",
+        "bidPx": "0.9529",
+        "bidSz": "15889.7",
+        "openTime": 1795414887346,
+        "closeTime": 1795501287346,
+        "fundingRate": "-0.0000078122881073",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "0.9536",
+        "markPrice": "0.953",
+        "openInterest": "10277.8"
+      },
+      {
+        "symbol": "SOL-USD",
+        "lastPx": "71.69",
+        "lastSz": "1.346",
+        "openPx": "71.77",
+        "highPx": "78.44",
+        "lowPx": "70.14",
+        "volume": "40438.596",
+        "quoteVolume": "2977816.37726",
+        "vwap": "73.6379763842443986",
+        "change": "-0.08",
+        "changePct": -0.11146718684687,
+        "askPx": "71.69",
+        "askSz": "356.362",
+        "bidPx": "71.68",
+        "bidSz": "288.59",
+        "openTime": 1795414890743,
+        "closeTime": 1795501290743,
+        "fundingRate": "0.0000125",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "71.72",
+        "markPrice": "71.69",
+        "openInterest": "5640.218"
+      },
+      {
+        "symbol": "AAVE-USD",
+        "lastPx": "97.63",
+        "lastSz": "0.01",
+        "openPx": "97.21",
+        "highPx": "106.29",
+        "lowPx": "95.32",
+        "volume": "94.88",
+        "quoteVolume": "9388.318",
+        "vwap": "98.9493887015177066",
+        "change": "0.42",
+        "changePct": 0.43205431539965,
+        "askPx": "97.64",
+        "askSz": "16.64",
+        "bidPx": "97.63",
+        "bidSz": "27.01",
+        "openTime": 1795414889376,
+        "closeTime": 1795501289376,
+        "fundingRate": "-0.0000052828700865",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "97.7",
+        "markPrice": "97.64",
+        "openInterest": "3.76"
+      },
+      {
+        "symbol": "SUI-USD",
+        "lastPx": "0.6764",
+        "lastSz": "128.9",
+        "openPx": "0.6623",
+        "highPx": "0.733",
+        "lowPx": "0.6584",
+        "volume": "1212187.9",
+        "quoteVolume": "821353.7999",
+        "vwap": "0.6775796061815169",
+        "change": "0.0141",
+        "changePct": 2.12894458704515,
+        "askPx": "0.6764",
+        "askSz": "2675.3",
+        "bidPx": "0.6763",
+        "bidSz": "1873.5",
+        "openTime": 1795414887424,
+        "closeTime": 1795501287424,
+        "fundingRate": "0.0000125",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "0.6767",
+        "markPrice": "0.6763",
+        "openInterest": "177164.6"
+      },
+      {
+        "symbol": "DOGE-USD",
+        "lastPx": "0.05662",
+        "lastSz": "1",
+        "openPx": "0.05558",
+        "highPx": "0.0602",
+        "lowPx": "0.05526",
+        "volume": "2036197",
+        "quoteVolume": "118705.06038",
+        "vwap": "0.0582974340793155",
+        "change": "0.00104",
+        "changePct": 1.87117668225981,
+        "askPx": "0.05662",
+        "askSz": "176174",
+        "bidPx": "0.05661",
+        "bidSz": "143117",
+        "openTime": 1795414891230,
+        "closeTime": 1795501291230,
+        "fundingRate": "0.0000125",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "0.05664",
+        "markPrice": "0.05661",
+        "openInterest": "3908744"
+      },
+      {
+        "symbol": "AVAX-USD",
+        "lastPx": "6.79",
+        "lastSz": "1",
+        "openPx": "6.689",
+        "highPx": "7.215",
+        "lowPx": "6.662",
+        "volume": "5624",
+        "quoteVolume": "38268.017",
+        "vwap": "6.8044126955903272",
+        "change": "0.101",
+        "changePct": 1.50994169532068,
+        "askPx": "6.792",
+        "askSz": "317",
+        "bidPx": "6.791",
+        "bidSz": "174",
+        "openTime": 1795414861789,
+        "closeTime": 1795501261789,
+        "fundingRate": "0.0000125",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "6.795",
+        "markPrice": "6.791",
+        "openInterest": "1842"
+      },
+      {
+        "symbol": "ADA-USD",
+        "lastPx": "0.14871",
+        "lastSz": "6.4",
+        "openPx": "0.14559",
+        "highPx": "0.15621",
+        "lowPx": "0.14481",
+        "volume": "38661.1",
+        "quoteVolume": "5741.121402",
+        "vwap": "0.1484986563237983",
+        "change": "0.00312",
+        "changePct": 2.14300432722028,
+        "askPx": "0.1488",
+        "askSz": "15096.5",
+        "bidPx": "0.1487",
+        "bidSz": "16161.6",
+        "openTime": 1795414885509,
+        "closeTime": 1795501285509,
+        "fundingRate": "0.0000108958415277",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "0.14889",
+        "markPrice": "0.14875",
+        "openInterest": "1481.6"
+      },
+      {
+        "symbol": "UNI-USD",
+        "lastPx": "4.9044",
+        "lastSz": "2",
+        "openPx": "4.7762",
+        "highPx": "5.306",
+        "lowPx": "4.7141",
+        "volume": "37586.9",
+        "quoteVolume": "187720.09487",
+        "vwap": "4.9942957485187658",
+        "change": "0.1282",
+        "changePct": 2.68414220510029,
+        "askPx": "4.904",
+        "askSz": "64.7",
+        "bidPx": "4.903",
+        "bidSz": "112.9",
+        "openTime": 1795414879222,
+        "closeTime": 1795501279222,
+        "fundingRate": "0.0000125",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "4.9057",
+        "markPrice": "4.9031",
+        "openInterest": "879.4"
+      },
+      {
+        "symbol": "BNB-USD",
+        "lastPx": "553.7",
+        "lastSz": "0.001",
+        "openPx": "557.7",
+        "highPx": "587.2",
+        "lowPx": "545.1",
+        "volume": "32.93",
+        "quoteVolume": "18569.8436",
+        "vwap": "563.9187245672638931",
+        "change": "-4",
+        "changePct": -0.71723148646226,
+        "askPx": "553.7",
+        "askSz": "46.545",
+        "bidPx": "553.6",
+        "bidSz": "41.235",
+        "openTime": 1795414889619,
+        "closeTime": 1795501289619,
+        "fundingRate": "0.0000125",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "553.5",
+        "markPrice": "553.5",
+        "openInterest": "89.588"
+      },
+      {
+        "symbol": "HYPE-USD",
+        "lastPx": "64.206",
+        "lastSz": "0.01",
+        "openPx": "62.83",
+        "highPx": "69.709",
+        "lowPx": "62.108",
+        "volume": "17055.38",
+        "quoteVolume": "1130231.63423",
+        "vwap": "66.2683349318514158",
+        "change": "1.376",
+        "changePct": 2.19003660671654,
+        "askPx": "64.207",
+        "askSz": "263.7",
+        "bidPx": "64.206",
+        "bidSz": "213.48",
+        "openTime": 1795414890828,
+        "closeTime": 1795501290828,
+        "fundingRate": "0.0000125",
+        "nextFundingTime": 1795503600000,
+        "indexPrice": "64.225",
+        "markPrice": "64.199",
+        "openInterest": "2384.06"
+      }
+    ],
+    "realizedVol": {
+      "SOL-USD": 0.9774,
+      "BTC-USD": 0.8089,
+      "ETH-USD": 0.9066,
+      "BNB-USD": 0.7186
+    }
+  },
+  "spot": {
+    "symbols": [
+      {
+        "id": 6,
+        "name": "vLINK_vUSDC",
+        "displayName": "LINK/USDC",
+        "baseCoinID": 6,
+        "baseCoin": "vLINK",
+        "baseCoinPrecision": 18,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 3,
+        "tickSize": "0.001",
+        "minPrice": "0.001",
+        "maxPrice": "0",
+        "quantityPrecision": 1,
+        "stepSize": "0.1",
+        "minQuantity": "0.1",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.1",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 21,
+        "name": "vSUI_vUSDC",
+        "displayName": "SUI/USDC",
+        "baseCoinID": 23,
+        "baseCoin": "vSUI",
+        "baseCoinPrecision": 9,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 1,
+        "stepSize": "0.1",
+        "minQuantity": "0.1",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.1",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 26,
+        "name": "vUSSI_vUSDC",
+        "displayName": "USSI/USDC",
+        "baseCoinID": 28,
+        "baseCoin": "vUSSI",
+        "baseCoinPrecision": 8,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 3,
+        "name": "vMAG7ssi_vUSDC",
+        "displayName": "MAG7ssi/USDC",
+        "baseCoinID": 3,
+        "baseCoin": "vMAG7.ssi",
+        "baseCoinPrecision": 8,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 19,
+        "name": "vAVAX_vUSDC",
+        "displayName": "AVAX/USDC",
+        "baseCoinID": 21,
+        "baseCoin": "vAVAX",
+        "baseCoinPrecision": 18,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 2,
+        "tickSize": "0.01",
+        "minPrice": "0.01",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 16,
+        "name": "vUNI_vUSDC",
+        "displayName": "UNI/USDC",
+        "baseCoinID": 17,
+        "baseCoin": "vUNI",
+        "baseCoinPrecision": 18,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 3,
+        "tickSize": "0.001",
+        "minPrice": "0.001",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 2,
+        "name": "vETH_vUSDC",
+        "displayName": "ETH/USDC",
+        "baseCoinID": 2,
+        "baseCoin": "vETH",
+        "baseCoinPrecision": 18,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 1,
+        "tickSize": "0.1",
+        "minPrice": "0.1",
+        "maxPrice": "0",
+        "quantityPrecision": 4,
+        "stepSize": "0.0001",
+        "minQuantity": "0.0001",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.0001",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 24,
+        "name": "vDEFIssi_vUSDC",
+        "displayName": "DEFIssi/USDC",
+        "baseCoinID": 26,
+        "baseCoin": "vDEFI.ssi",
+        "baseCoinPrecision": 8,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 7,
+        "name": "vSOL_vUSDC",
+        "displayName": "SOL/USDC",
+        "baseCoinID": 7,
+        "baseCoin": "vSOL",
+        "baseCoinPrecision": 9,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 2,
+        "tickSize": "0.01",
+        "minPrice": "0.01",
+        "maxPrice": "0",
+        "quantityPrecision": 3,
+        "stepSize": "0.001",
+        "minQuantity": "0.001",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.001",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 1,
+        "name": "vBTC_vUSDC",
+        "displayName": "BTC/USDC",
+        "baseCoinID": 1,
+        "baseCoin": "vBTC",
+        "baseCoinPrecision": 8,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 0,
+        "tickSize": "1",
+        "minPrice": "1",
+        "maxPrice": "0",
+        "quantityPrecision": 5,
+        "stepSize": "0.00001",
+        "minQuantity": "0.00001",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.00001",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 18,
+        "name": "vHYPE_vUSDC",
+        "displayName": "HYPE/USDC",
+        "baseCoinID": 19,
+        "baseCoin": "vHYPE",
+        "baseCoinPrecision": 18,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 3,
+        "tickSize": "0.001",
+        "minPrice": "0.001",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 10,
+        "name": "vBNB_vUSDC",
+        "displayName": "BNB/USDC",
+        "baseCoinID": 10,
+        "baseCoin": "vBNB",
+        "baseCoinPrecision": 18,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 1,
+        "tickSize": "0.1",
+        "minPrice": "0.1",
+        "maxPrice": "0",
+        "quantityPrecision": 3,
+        "stepSize": "0.001",
+        "minQuantity": "0.001",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.001",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 11,
+        "name": "vADA_vUSDC",
+        "displayName": "ADA/USDC",
+        "baseCoinID": 11,
+        "baseCoin": "vADA",
+        "baseCoinPrecision": 6,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 5,
+        "tickSize": "0.00001",
+        "minPrice": "0.00001",
+        "maxPrice": "0",
+        "quantityPrecision": 1,
+        "stepSize": "0.1",
+        "minQuantity": "0.1",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.1",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "HALT"
+      },
+      {
+        "id": 17,
+        "name": "vAAVE_vUSDC",
+        "displayName": "AAVE/USDC",
+        "baseCoinID": 18,
+        "baseCoin": "vAAVE",
+        "baseCoinPrecision": 18,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 2,
+        "tickSize": "0.01",
+        "minPrice": "0.01",
+        "maxPrice": "0",
+        "quantityPrecision": 3,
+        "stepSize": "0.001",
+        "minQuantity": "0.001",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.001",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 8,
+        "name": "vDOGE_vUSDC",
+        "displayName": "DOGE/USDC",
+        "baseCoinID": 8,
+        "baseCoin": "vDOGE",
+        "baseCoinPrecision": 8,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 5,
+        "tickSize": "0.00001",
+        "minPrice": "0.00001",
+        "maxPrice": "0",
+        "quantityPrecision": 0,
+        "stepSize": "1",
+        "minQuantity": "1",
+        "maxQuantity": "0",
+        "marketMinQuantity": "1",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 9,
+        "name": "vXRP_vUSDC",
+        "displayName": "XRP/USDC",
+        "baseCoinID": 9,
+        "baseCoin": "vXRP",
+        "baseCoinPrecision": 6,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 1,
+        "stepSize": "0.1",
+        "minQuantity": "0.1",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.1",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 4,
+        "name": "WSOSO_vUSDC",
+        "displayName": "SOSO/USDC",
+        "baseCoinID": 4,
+        "baseCoin": "WSOSO",
+        "baseCoinPrecision": 18,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "0",
+        "minNotional": "1",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      },
+      {
+        "id": 25,
+        "name": "vMEMEssi_vUSDC",
+        "displayName": "MEMEssi/USDC",
+        "baseCoinID": 27,
+        "baseCoin": "vMEME.ssi",
+        "baseCoinPrecision": 8,
+        "quoteCoinID": 0,
+        "quoteCoin": "vUSDC",
+        "quoteCoinPrecision": 6,
+        "pricePrecision": 4,
+        "tickSize": "0.0001",
+        "minPrice": "0.0001",
+        "maxPrice": "0",
+        "quantityPrecision": 2,
+        "stepSize": "0.01",
+        "minQuantity": "0.01",
+        "maxQuantity": "0",
+        "marketMinQuantity": "0.01",
+        "marketMaxQuantity": "0",
+        "minNotional": "5",
+        "maxNotional": "0",
+        "buyLimitUpRatio": "1",
+        "sellLimitDownRatio": "0.5",
+        "marketDeviationRatio": "0.1",
+        "makerFee": "0.00035",
+        "takerFee": "0.00065",
+        "status": "TRADING"
+      }
+    ],
+    "tickers": [
+      {
+        "symbol": "WSOSO_vUSDC",
+        "lastPx": "0.2763",
+        "lastSz": "78.08",
+        "openPx": "0.2561",
+        "highPx": "0.2978",
+        "lowPx": "0.2513",
+        "volume": "2376367.7",
+        "quoteVolume": "631185.353296",
+        "vwap": "0.2656092966151661",
+        "change": "0.0202",
+        "changePct": 7.88754392815307,
+        "askPx": "0.2766",
+        "askSz": "840.25",
+        "bidPx": "0.2763",
+        "bidSz": "739.58",
+        "openTime": 1795414891504,
+        "closeTime": 1795501291504
+      },
+      {
+        "symbol": "vMAG7ssi_vUSDC",
+        "lastPx": "0.392",
+        "lastSz": "0.24",
+        "openPx": "0.3973",
+        "highPx": "0.4193",
+        "lowPx": "0.3849",
+        "volume": "12820.16",
+        "quoteVolume": "5107.167345",
+        "vwap": "0.3983700160528418",
+        "change": "-0.0053",
+        "changePct": -1.33400453058142,
+        "askPx": "0.3922",
+        "askSz": "672.28",
+        "bidPx": "0.3921",
+        "bidSz": "571.71",
+        "openTime": 1795414889376,
+        "closeTime": 1795501289376
+      },
+      {
+        "symbol": "vBTC_vUSDC",
+        "lastPx": "60490",
+        "lastSz": "0.00001",
+        "openPx": "61451",
+        "highPx": "64450",
+        "lowPx": "59408",
+        "volume": "0.30505",
+        "quoteVolume": "18814.02792",
+        "vwap": "61675.2267497131617768",
+        "change": "-961",
+        "changePct": -1.56384761842769,
+        "askPx": "60491",
+        "askSz": "0.03859",
+        "bidPx": "60490",
+        "bidSz": "0.04235",
+        "openTime": 1795414891733,
+        "closeTime": 1795501291733
+      },
+      {
+        "symbol": "vUNI_vUSDC",
+        "lastPx": "4.907",
+        "lastSz": "0.02",
+        "openPx": "4.778",
+        "highPx": "5.31",
+        "lowPx": "4.718",
+        "volume": "54.73",
+        "quoteVolume": "265.83221",
+        "vwap": "4.8571571350264937",
+        "change": "0.129",
+        "changePct": 2.69987442444537,
+        "askPx": "4.906",
+        "askSz": "43.31",
+        "bidPx": "4.905",
+        "bidSz": "61.69",
+        "openTime": 1795414878099,
+        "closeTime": 1795501278099
+      },
+      {
+        "symbol": "vUSSI_vUSDC",
+        "lastPx": "0.9994",
+        "lastSz": "0.09",
+        "openPx": "0.9994",
+        "highPx": "0.9995",
+        "lowPx": "0.9993",
+        "volume": "328.66",
+        "quoteVolume": "328.478737",
+        "vwap": "0.999448478670967",
+        "change": "0",
+        "changePct": 0,
+        "askPx": "0.9995",
+        "askSz": "328.3",
+        "bidPx": "0.9994",
+        "bidSz": "284.3",
+        "openTime": 1795414889376,
+        "closeTime": 1795501289376
+      },
+      {
+        "symbol": "vSOL_vUSDC",
+        "lastPx": "71.7",
+        "lastSz": "0.001",
+        "openPx": "71.83",
+        "highPx": "78.38",
+        "lowPx": "70.3",
+        "volume": "103.844",
+        "quoteVolume": "7647.83252",
+        "vwap": "73.6473221370517314",
+        "change": "-0.13",
+        "changePct": -0.18098287623556,
+        "askPx": "71.72",
+        "askSz": "3.262",
+        "bidPx": "71.71",
+        "bidSz": "4.859",
+        "openTime": 1795414886287,
+        "closeTime": 1795501286287
+      },
+      {
+        "symbol": "vAVAX_vUSDC",
+        "lastPx": "6.79",
+        "lastSz": "0.01",
+        "openPx": "6.69",
+        "highPx": "7.23",
+        "lowPx": "6.66",
+        "volume": "106.46",
+        "quoteVolume": "718.671",
+        "vwap": "6.7506199511553635",
+        "change": "0.1",
+        "changePct": 1.49476831091181,
+        "askPx": "6.8",
+        "askSz": "22.91",
+        "bidPx": "6.79",
+        "bidSz": "22.73",
+        "openTime": 1795414878261,
+        "closeTime": 1795501278261
+      },
+      {
+        "symbol": "vDEFIssi_vUSDC",
+        "lastPx": "0.382",
+        "lastSz": "0.27",
+        "openPx": "0.3749",
+        "highPx": "0.4103",
+        "lowPx": "0.3709",
+        "volume": "913.74",
+        "quoteVolume": "348.572235",
+        "vwap": "0.3814785770569309",
+        "change": "0.0071",
+        "changePct": 1.89383835689517,
+        "askPx": "0.3821",
+        "askSz": "284.83",
+        "bidPx": "0.382",
+        "bidSz": "194.77",
+        "openTime": 1795414867376,
+        "closeTime": 1795501267376
+      },
+      {
+        "symbol": "vAAVE_vUSDC",
+        "lastPx": "97.71",
+        "lastSz": "0.001",
+        "openPx": "97.44",
+        "highPx": "106.28",
+        "lowPx": "95.21",
+        "volume": "2.401",
+        "quoteVolume": "236.28174",
+        "vwap": "98.4097209496043315",
+        "change": "0.27",
+        "changePct": 0.27709359605911,
+        "askPx": "97.7",
+        "askSz": "3.087",
+        "bidPx": "97.68",
+        "bidSz": "2.221",
+        "openTime": 1795414859910,
+        "closeTime": 1795501259910
+      },
+      {
+        "symbol": "vBNB_vUSDC",
+        "lastPx": "553.4",
+        "lastSz": "0.001",
+        "openPx": "558.1",
+        "highPx": "587.1",
+        "lowPx": "545.8",
+        "volume": "2.852",
+        "quoteVolume": "1593.9974",
+        "vwap": "558.9051192145862553",
+        "change": "-4.7",
+        "changePct": -0.84214298512811,
+        "askPx": "553.5",
+        "askSz": "0.675",
+        "bidPx": "553.4",
+        "bidSz": "0.683",
+        "openTime": 1795414887346,
+        "closeTime": 1795501287346
+      },
+      {
+        "symbol": "vMEMEssi_vUSDC",
+        "lastPx": "0.1406",
+        "lastSz": "0.77",
+        "openPx": "0.1381",
+        "highPx": "0.1493",
+        "lowPx": "0.1369",
+        "volume": "2439.98",
+        "quoteVolume": "341.953213",
+        "vwap": "0.1401459081631817",
+        "change": "0.0025",
+        "changePct": 1.81028240405503,
+        "askPx": "0.1406",
+        "askSz": "357.47",
+        "bidPx": "0.1405",
+        "bidSz": "382.41",
+        "openTime": 1795414871480,
+        "closeTime": 1795501271480
+      },
+      {
+        "symbol": "vLINK_vUSDC",
+        "lastPx": "9.122",
+        "lastSz": "0.1",
+        "openPx": "8.897",
+        "highPx": "9.547",
+        "lowPx": "8.868",
+        "volume": "346",
+        "quoteVolume": "3127.6396",
+        "vwap": "9.0394208092485549",
+        "change": "0.225",
+        "changePct": 2.52894234011465,
+        "askPx": "9.127",
+        "askSz": "15.7",
+        "bidPx": "9.12",
+        "bidSz": "24",
+        "openTime": 1795414889707,
+        "closeTime": 1795501289707
+      },
+      {
+        "symbol": "vDOGE_vUSDC",
+        "lastPx": "0.05655",
+        "lastSz": "1",
+        "openPx": "0.05553",
+        "highPx": "0.06015",
+        "lowPx": "0.0553",
+        "volume": "4194",
+        "quoteVolume": "237.07324",
+        "vwap": "0.056526762041011",
+        "change": "0.00102",
+        "changePct": 1.83684494867639,
+        "askPx": "0.05658",
+        "askSz": "2705",
+        "bidPx": "0.05657",
+        "bidSz": "2492",
+        "openTime": 1795414872760,
+        "closeTime": 1795501272760
+      },
+      {
+        "symbol": "vADA_vUSDC",
+        "lastPx": "0.25378",
+        "lastSz": "0.3",
+        "openPx": "0.24771",
+        "highPx": "0.25633",
+        "lowPx": "0.24521",
+        "volume": "2897.2",
+        "quoteVolume": "727.320258",
+        "vwap": "0.2510424748032583",
+        "change": "0.00607",
+        "changePct": 2.45044608614913,
+        "askPx": "0",
+        "askSz": "0",
+        "bidPx": "0",
+        "bidSz": "0",
+        "openTime": 1791705599326,
+        "closeTime": 1791791999326
+      },
+      {
+        "symbol": "vXRP_vUSDC",
+        "lastPx": "0.9532",
+        "lastSz": "0.1",
+        "openPx": "0.9427",
+        "highPx": "1.0256",
+        "lowPx": "0.9332",
+        "volume": "335.3",
+        "quoteVolume": "318.51982",
+        "vwap": "0.9499547271100507",
+        "change": "0.0105",
+        "changePct": 1.11382200063647,
+        "askPx": "0.9536",
+        "askSz": "226.4",
+        "bidPx": "0.9535",
+        "bidSz": "305.9",
+        "openTime": 1795414866143,
+        "closeTime": 1795501266143
+      },
+      {
+        "symbol": "vSUI_vUSDC",
+        "lastPx": "0.6766",
+        "lastSz": "0.1",
+        "openPx": "0.6628",
+        "highPx": "0.732",
+        "lowPx": "0.659",
+        "volume": "324.4",
+        "quoteVolume": "219.97701",
+        "vwap": "0.6781042231812577",
+        "change": "0.0138",
+        "changePct": 2.08207604103802,
+        "askPx": "0.6768",
+        "askSz": "426.7",
+        "bidPx": "0.6767",
+        "bidSz": "322.5",
+        "openTime": 1795414868691,
+        "closeTime": 1795501268691
+      },
+      {
+        "symbol": "vHYPE_vUSDC",
+        "lastPx": "64.218",
+        "lastSz": "0.01",
+        "openPx": "62.93",
+        "highPx": "69.734",
+        "lowPx": "62.194",
+        "volume": "31.8",
+        "quoteVolume": "2044.52219",
+        "vwap": "64.2931506289308176",
+        "change": "1.288",
+        "changePct": 2.04671857619577,
+        "askPx": "64.222",
+        "askSz": "2.18",
+        "bidPx": "64.221",
+        "bidSz": "2.94",
+        "openTime": 1795414877393,
+        "closeTime": 1795501277393
+      },
+      {
+        "symbol": "vETH_vUSDC",
+        "lastPx": "1701.3",
+        "lastSz": "0.0005",
+        "openPx": "1721.9",
+        "highPx": "1840.7",
+        "lowPx": "1670.1",
+        "volume": "7.6643",
+        "quoteVolume": "13068.30999",
+        "vwap": "1705.0885260232506556",
+        "change": "-20.6",
+        "changePct": -1.19635286602009,
+        "askPx": "1701.4",
+        "askSz": "0.2433",
+        "bidPx": "1701.3",
+        "bidSz": "0.2578",
+        "openTime": 1795414880388,
+        "closeTime": 1795501280388
+      }
+    ]
+  },
+  "orderbooks": {
+    "perps": {
+      "ETH-USD": {
+        "blockTime": 1795501292499,
+        "blockHeight": 303802038,
+        "updateID": 2903794629,
+        "bids": [
+          [
+            "1702.3",
+            "70.4814"
+          ],
+          [
+            "1702.2",
+            "75.1605"
+          ],
+          [
+            "1702.1",
+            "57.0829"
+          ],
+          [
+            "1702",
+            "68.1367"
+          ],
+          [
+            "1701.9",
+            "76.1821"
+          ],
+          [
+            "1701.8",
+            "60.7594"
+          ],
+          [
+            "1701.7",
+            "48.6055"
+          ],
+          [
+            "1701.6",
+            "42.9066"
+          ],
+          [
+            "1701.5",
+            "50.9863"
+          ],
+          [
+            "1701.4",
+            "314.5718"
+          ],
+          [
+            "1701.3",
+            "47.5489"
+          ],
+          [
+            "1701.2",
+            "43.3078"
+          ],
+          [
+            "1701.1",
+            "46.6686"
+          ],
+          [
+            "1701",
+            "48.7188"
+          ],
+          [
+            "1700.9",
+            "56.8177"
+          ]
+        ],
+        "asks": [
+          [
+            "1702.4",
+            "61.4604"
+          ],
+          [
+            "1702.5",
+            "68.165"
+          ],
+          [
+            "1702.6",
+            "96.6029"
+          ],
+          [
+            "1702.7",
+            "55.7268"
+          ],
+          [
+            "1702.8",
+            "72.6442"
+          ],
+          [
+            "1702.9",
+            "56.5911"
+          ],
+          [
+            "1703",
+            "73.6113"
+          ],
+          [
+            "1703.1",
+            "74.1528"
+          ],
+          [
+            "1703.2",
+            "50.3462"
+          ],
+          [
+            "1703.3",
+            "274.0192"
+          ],
+          [
+            "1703.4",
+            "76.3402"
+          ],
+          [
+            "1703.5",
+            "68.9833"
+          ],
+          [
+            "1703.6",
+            "74.4351"
+          ],
+          [
+            "1703.7",
+            "75.0225"
+          ],
+          [
+            "1703.8",
+            "45.6631"
+          ]
+        ]
+      },
+      "BTC-USD": {
+        "blockTime": 1795501292571,
+        "blockHeight": 303802039,
+        "updateID": 3581995258,
+        "bids": [
+          [
+            "60533",
+            "1.71493"
+          ],
+          [
+            "60532",
+            "0.54567"
+          ],
+          [
+            "60531",
+            "0.81895"
+          ],
+          [
+            "60530",
+            "0.68517"
+          ],
+          [
+            "60529",
+            "0.96942"
+          ],
+          [
+            "60528",
+            "0.66587"
+          ],
+          [
+            "60527",
+            "0.77708"
+          ],
+          [
+            "60526",
+            "0.81853"
+          ],
+          [
+            "60525",
+            "0.51489"
+          ],
+          [
+            "60524",
+            "0.64158"
+          ],
+          [
+            "60523",
+            "1.1871"
+          ],
+          [
+            "60522",
+            "0.71712"
+          ],
+          [
+            "60521",
+            "0.61615"
+          ],
+          [
+            "60520",
+            "1.02563"
+          ],
+          [
+            "60519",
+            "1.08215"
+          ]
+        ],
+        "asks": [
+          [
+            "60534",
+            "1.08391"
+          ],
+          [
+            "60535",
+            "0.43676"
+          ],
+          [
+            "60536",
+            "0.46179"
+          ],
+          [
+            "60537",
+            "0.93528"
+          ],
+          [
+            "60538",
+            "0.48705"
+          ],
+          [
+            "60539",
+            "0.74147"
+          ],
+          [
+            "60540",
+            "0.60723"
+          ],
+          [
+            "60541",
+            "0.48957"
+          ],
+          [
+            "60542",
+            "0.48734"
+          ],
+          [
+            "60543",
+            "1.05332"
+          ],
+          [
+            "60544",
+            "0.66354"
+          ],
+          [
+            "60545",
+            "0.70153"
+          ],
+          [
+            "60546",
+            "1.12979"
+          ],
+          [
+            "60547",
+            "1.19488"
+          ],
+          [
+            "60548",
+            "0.66969"
+          ]
+        ]
+      },
+      "SOL-USD": {
+        "blockTime": 1795501292571,
+        "blockHeight": 303802039,
+        "updateID": 2601845132,
+        "bids": [
+          [
+            "71.68",
+            "288.59"
+          ],
+          [
+            "71.67",
+            "338.391"
+          ],
+          [
+            "71.66",
+            "173.96"
+          ],
+          [
+            "71.65",
+            "180.733"
+          ],
+          [
+            "71.64",
+            "277.225"
+          ],
+          [
+            "71.63",
+            "674.023"
+          ],
+          [
+            "71.62",
+            "285.788"
+          ],
+          [
+            "71.61",
+            "363.268"
+          ],
+          [
+            "71.6",
+            "234.046"
+          ],
+          [
+            "71.59",
+            "295.683"
+          ],
+          [
+            "71.58",
+            "317.948"
+          ],
+          [
+            "71.57",
+            "189.892"
+          ],
+          [
+            "71.56",
+            "873.403"
+          ],
+          [
+            "71.55",
+            "281.88"
+          ],
+          [
+            "71.54",
+            "236.224"
+          ]
+        ],
+        "asks": [
+          [
+            "71.69",
+            "356.362"
+          ],
+          [
+            "71.7",
+            "147.244"
+          ],
+          [
+            "71.71",
+            "377.829"
+          ],
+          [
+            "71.72",
+            "343.575"
+          ],
+          [
+            "71.73",
+            "298.84"
+          ],
+          [
+            "71.74",
+            "895.874"
+          ],
+          [
+            "71.75",
+            "146.866"
+          ],
+          [
+            "71.76",
+            "332.72"
+          ],
+          [
+            "71.77",
+            "307.915"
+          ],
+          [
+            "71.78",
+            "191.356"
+          ],
+          [
+            "71.79",
+            "293.432"
+          ],
+          [
+            "71.8",
+            "403.748"
+          ],
+          [
+            "71.81",
+            "646.276"
+          ],
+          [
+            "71.82",
+            "311.14"
+          ],
+          [
+            "71.83",
+            "180.623"
+          ]
+        ]
+      }
+    },
+    "spot": {
+      "vBTC_vUSDC": {
+        "blockTime": 1795501292654,
+        "blockHeight": 303802040,
+        "updateID": 1935188086,
+        "bids": [
+          [
+            "60490",
+            "0.04235"
+          ],
+          [
+            "60489",
+            "0.03856"
+          ],
+          [
+            "60488",
+            "0.02349"
+          ],
+          [
+            "60487",
+            "0.04049"
+          ],
+          [
+            "60486",
+            "0.03921"
+          ],
+          [
+            "60485",
+            "0.03215"
+          ],
+          [
+            "60484",
+            "0.02385"
+          ],
+          [
+            "60483",
+            "0.02382"
+          ],
+          [
+            "60482",
+            "0.03371"
+          ],
+          [
+            "60481",
+            "0.02667"
+          ],
+          [
+            "60429",
+            "0.14078"
+          ],
+          [
+            "60369",
+            "0.1787"
+          ],
+          [
+            "60308",
+            "0.1394"
+          ],
+          [
+            "60248",
+            "0.1735"
+          ],
+          [
+            "60188",
+            "0.16313"
+          ]
+        ],
+        "asks": [
+          [
+            "60491",
+            "0.03859"
+          ],
+          [
+            "60492",
+            "0.0254"
+          ],
+          [
+            "60493",
+            "0.0268"
+          ],
+          [
+            "60494",
+            "0.02764"
+          ],
+          [
+            "60495",
+            "0.034"
+          ],
+          [
+            "60496",
+            "0.03922"
+          ],
+          [
+            "60497",
+            "0.04278"
+          ],
+          [
+            "60498",
+            "0.03489"
+          ],
+          [
+            "60499",
+            "0.0282"
+          ],
+          [
+            "60500",
+            "0.03196"
+          ],
+          [
+            "60552",
+            "0.15694"
+          ],
+          [
+            "60613",
+            "0.15351"
+          ],
+          [
+            "60673",
+            "0.14105"
+          ],
+          [
+            "60734",
+            "0.16417"
+          ],
+          [
+            "60795",
+            "0.13007"
+          ]
+        ]
+      },
+      "vETH_vUSDC": {
+        "blockTime": 1795501292900,
+        "blockHeight": 303802043,
+        "updateID": 1871767824,
+        "bids": [
+          [
+            "1701.3",
+            "0.2578"
+          ],
+          [
+            "1701.2",
+            "0.2779"
+          ],
+          [
+            "1701.1",
+            "0.3215"
+          ],
+          [
+            "1701",
+            "0.436"
+          ],
+          [
+            "1700.9",
+            "0.4241"
+          ],
+          [
+            "1700.8",
+            "0.1916"
+          ],
+          [
+            "1700.7",
+            "0.2317"
+          ],
+          [
+            "1700.6",
+            "0.2918"
+          ],
+          [
+            "1700.5",
+            "0.3408"
+          ],
+          [
+            "1700.4",
+            "0.371"
+          ],
+          [
+            "1697.8",
+            "5.0796"
+          ],
+          [
+            "1696.1",
+            "5.7362"
+          ],
+          [
+            "1694.5",
+            "4.5733"
+          ],
+          [
+            "1692.8",
+            "5.6524"
+          ],
+          [
+            "1691.1",
+            "4.9983"
+          ]
+        ],
+        "asks": [
+          [
+            "1701.4",
+            "0.2433"
+          ],
+          [
+            "1701.5",
+            "0.4051"
+          ],
+          [
+            "1701.6",
+            "0.3152"
+          ],
+          [
+            "1701.7",
+            "0.2849"
+          ],
+          [
+            "1701.8",
+            "0.3892"
+          ],
+          [
+            "1701.9",
+            "0.2022"
+          ],
+          [
+            "1702",
+            "0.3402"
+          ],
+          [
+            "1702.1",
+            "0.1803"
+          ],
+          [
+            "1702.2",
+            "0.3035"
+          ],
+          [
+            "1702.3",
+            "0.1622"
+          ],
+          [
+            "1704.9",
+            "4.6306"
+          ],
+          [
+            "1706.6",
+            "4.838"
+          ],
+          [
+            "1708.3",
+            "5.0662"
+          ],
+          [
+            "1710",
+            "5.2505"
+          ],
+          [
+            "1711.7",
+            "4.5916"
+          ]
+        ]
+      },
+      "vMAG7ssi_vUSDC": {
+        "blockTime": 1795501292900,
+        "blockHeight": 303802043,
+        "updateID": 3698322696,
+        "bids": [
+          [
+            "0.3921",
+            "571.71"
+          ],
+          [
+            "0.392",
+            "741.74"
+          ],
+          [
+            "0.3919",
+            "763.16"
+          ],
+          [
+            "0.3918",
+            "720.22"
+          ],
+          [
+            "0.3917",
+            "672.52"
+          ],
+          [
+            "0.3916",
+            "889.5"
+          ],
+          [
+            "0.3915",
+            "549.81"
+          ],
+          [
+            "0.3914",
+            "736.14"
+          ],
+          [
+            "0.3913",
+            "697.51"
+          ],
+          [
+            "0.3912",
+            "984.48"
+          ],
+          [
+            "0.3909",
+            "51989.87"
+          ],
+          [
+            "0.3905",
+            "43221.18"
+          ],
+          [
+            "0.3901",
+            "53785.21"
+          ],
+          [
+            "0.3897",
+            "55476.96"
+          ],
+          [
+            "0.3893",
+            "57059.37"
+          ]
+        ],
+        "asks": [
+          [
+            "0.3922",
+            "672.28"
+          ],
+          [
+            "0.3923",
+            "653.73"
+          ],
+          [
+            "0.3924",
+            "629.91"
+          ],
+          [
+            "0.3925",
+            "700.96"
+          ],
+          [
+            "0.3926",
+            "872.18"
+          ],
+          [
+            "0.3927",
+            "735.04"
+          ],
+          [
+            "0.3928",
+            "988.5"
+          ],
+          [
+            "0.3929",
+            "608.6"
+          ],
+          [
+            "0.393",
+            "979.21"
+          ],
+          [
+            "0.3931",
+            "690.46"
+          ],
+          [
+            "0.3934",
+            "51242.61"
+          ],
+          [
+            "0.3938",
+            "45872.35"
+          ],
+          [
+            "0.3942",
+            "40453.32"
+          ],
+          [
+            "0.3946",
+            "48578.62"
+          ],
+          [
+            "0.395",
+            "53611.21"
+          ]
+        ]
+      },
+      "vUSSI_vUSDC": {
+        "blockTime": 1795501292900,
+        "blockHeight": 303802043,
+        "updateID": 589574367,
+        "bids": [
+          [
+            "0.9994",
+            "284.3"
+          ],
+          [
+            "0.9993",
+            "255.67"
+          ],
+          [
+            "0.9992",
+            "270.44"
+          ],
+          [
+            "0.9991",
+            "270.83"
+          ],
+          [
+            "0.999",
+            "261.57"
+          ],
+          [
+            "0.9989",
+            "296.33"
+          ],
+          [
+            "0.9988",
+            "285.47"
+          ],
+          [
+            "0.9987",
+            "306.28"
+          ],
+          [
+            "0.9986",
+            "374.88"
+          ],
+          [
+            "0.9985",
+            "222.78"
+          ],
+          [
+            "0.9984",
+            "374.46"
+          ],
+          [
+            "0.9983",
+            "384.53"
+          ],
+          [
+            "0.9982",
+            "249.49"
+          ],
+          [
+            "0.9981",
+            "384.88"
+          ],
+          [
+            "0.998",
+            "306.9"
+          ]
+        ],
+        "asks": [
+          [
+            "0.9995",
+            "328.3"
+          ],
+          [
+            "0.9996",
+            "292.34"
+          ],
+          [
+            "0.9997",
+            "337.04"
+          ],
+          [
+            "0.9998",
+            "299.02"
+          ],
+          [
+            "0.9999",
+            "388.83"
+          ],
+          [
+            "1",
+            "230.68"
+          ],
+          [
+            "1.0001",
+            "315.67"
+          ],
+          [
+            "1.0002",
+            "231.84"
+          ],
+          [
+            "1.0003",
+            "334.94"
+          ],
+          [
+            "1.0004",
+            "343.08"
+          ],
+          [
+            "1.0005",
+            "274.65"
+          ],
+          [
+            "1.0006",
+            "271.81"
+          ],
+          [
+            "1.0007",
+            "241.76"
+          ],
+          [
+            "1.0008",
+            "259.18"
+          ],
+          [
+            "1.0009",
+            "294.06"
+          ]
+        ]
+      },
+      "vSOL_vUSDC": {
+        "blockTime": 1795501293283,
+        "blockHeight": 303802048,
+        "updateID": 1581516787,
+        "bids": [
+          [
+            "71.71",
+            "4.596"
+          ],
+          [
+            "71.7",
+            "2.988"
+          ],
+          [
+            "71.69",
+            "4.446"
+          ],
+          [
+            "71.68",
+            "4.001"
+          ],
+          [
+            "71.67",
+            "3.515"
+          ],
+          [
+            "71.66",
+            "4.517"
+          ],
+          [
+            "71.65",
+            "3.974"
+          ],
+          [
+            "71.64",
+            "5.322"
+          ],
+          [
+            "71.63",
+            "5.066"
+          ],
+          [
+            "71.62",
+            "4.974"
+          ],
+          [
+            "71.61",
+            "4.016"
+          ],
+          [
+            "71.6",
+            "3.879"
+          ],
+          [
+            "71.59",
+            "5.094"
+          ],
+          [
+            "71.58",
+            "4.359"
+          ],
+          [
+            "71.57",
+            "4.159"
+          ]
+        ],
+        "asks": [
+          [
+            "71.72",
+            "4.466"
+          ],
+          [
+            "71.73",
+            "5.085"
+          ],
+          [
+            "71.74",
+            "3.896"
+          ],
+          [
+            "71.75",
+            "4.057"
+          ],
+          [
+            "71.76",
+            "4.978"
+          ],
+          [
+            "71.77",
+            "3.61"
+          ],
+          [
+            "71.78",
+            "3.581"
+          ],
+          [
+            "71.79",
+            "3.879"
+          ],
+          [
+            "71.8",
+            "4.664"
+          ],
+          [
+            "71.81",
+            "3.936"
+          ],
+          [
+            "71.82",
+            "4.515"
+          ],
+          [
+            "71.83",
+            "3.51"
+          ],
+          [
+            "71.84",
+            "4.388"
+          ],
+          [
+            "71.85",
+            "4.732"
+          ],
+          [
+            "71.86",
+            "3.324"
+          ]
+        ]
+      }
+    }
+  },
+  "sosovalue": {
+    "mode": "SNAPSHOT",
+    "note": "Reference SoSoValue ETF & macro dataset matching Open API v1 schema. Supply x-soso-api-key in Telemetry Settings or GitHub Secrets for live direct pulls.",
+    "marketOverview": {
+      "total_market_cap": "2294850000000.00",
+      "total_market_cap_change_pct": "-1.42",
+      "total_volume_24h": "78420000000.00",
+      "eth_gas_gwei": "0.18",
+      "btc_gas_sat_vb": "7",
+      "as_of": 1795501291451
+    },
+    "btcEtfHistory": [
+      {
+        "date": "2026-11-23",
+        "total_net_inflow": 248600000,
+        "total_value_traded": 3420000000,
+        "total_net_assets": 94180000000,
+        "cum_net_inflow": 38920000000
+      },
+      {
+        "date": "2026-11-20",
+        "total_net_inflow": 184200000,
+        "total_value_traded": 2980000000,
+        "total_net_assets": 93840000000,
+        "cum_net_inflow": 38671400000
+      },
+      {
+        "date": "2026-11-19",
+        "total_net_inflow": -62400000,
+        "total_value_traded": 3150000000,
+        "total_net_assets": 93110000000,
+        "cum_net_inflow": 38487200000
+      },
+      {
+        "date": "2026-11-18",
+        "total_net_inflow": 312900000,
+        "total_value_traded": 4120000000,
+        "total_net_assets": 93620000000,
+        "cum_net_inflow": 38549600000
+      },
+      {
+        "date": "2026-11-17",
+        "total_net_inflow": 141500000,
+        "total_value_traded": 2640000000,
+        "total_net_assets": 92950000000,
+        "cum_net_inflow": 38236700000
+      },
+      {
+        "date": "2026-11-16",
+        "total_net_inflow": -94800000,
+        "total_value_traded": 2890000000,
+        "total_net_assets": 92410000000,
+        "cum_net_inflow": 38095200000
+      },
+      {
+        "date": "2026-11-13",
+        "total_net_inflow": 205100000,
+        "total_value_traded": 3340000000,
+        "total_net_assets": 92780000000,
+        "cum_net_inflow": 38190000000
+      },
+      {
+        "date": "2026-11-12",
+        "total_net_inflow": 428700000,
+        "total_value_traded": 4860000000,
+        "total_net_assets": 92310000000,
+        "cum_net_inflow": 37984900000
+      },
+      {
+        "date": "2026-11-11",
+        "total_net_inflow": 118400000,
+        "total_value_traded": 2510000000,
+        "total_net_assets": 91640000000,
+        "cum_net_inflow": 37556200000
+      },
+      {
+        "date": "2026-11-10",
+        "total_net_inflow": -31900000,
+        "total_value_traded": 2290000000,
+        "total_net_assets": 91220000000,
+        "cum_net_inflow": 37437800000
+      }
+    ],
+    "ethEtfHistory": [
+      {
+        "date": "2026-11-23",
+        "total_net_inflow": 68400000,
+        "total_value_traded": 612000000,
+        "total_net_assets": 11420000000,
+        "cum_net_inflow": 4180000000
+      },
+      {
+        "date": "2026-11-20",
+        "total_net_inflow": 44100000,
+        "total_value_traded": 528000000,
+        "total_net_assets": 11290000000,
+        "cum_net_inflow": 4111600000
+      },
+      {
+        "date": "2026-11-19",
+        "total_net_inflow": -18700000,
+        "total_value_traded": 495000000,
+        "total_net_assets": 11180000000,
+        "cum_net_inflow": 4067500000
+      },
+      {
+        "date": "2026-11-18",
+        "total_net_inflow": 92300000,
+        "total_value_traded": 740000000,
+        "total_net_assets": 11210000000,
+        "cum_net_inflow": 4086200000
+      },
+      {
+        "date": "2026-11-17",
+        "total_net_inflow": 31200000,
+        "total_value_traded": 460000000,
+        "total_net_assets": 11060000000,
+        "cum_net_inflow": 3993900000
+      },
+      {
+        "date": "2026-11-16",
+        "total_net_inflow": -24500000,
+        "total_value_traded": 418000000,
+        "total_net_assets": 10980000000,
+        "cum_net_inflow": 3962700000
+      },
+      {
+        "date": "2026-11-13",
+        "total_net_inflow": 53900000,
+        "total_value_traded": 554000000,
+        "total_net_assets": 11020000000,
+        "cum_net_inflow": 3987200000
+      },
+      {
+        "date": "2026-11-12",
+        "total_net_inflow": 112600000,
+        "total_value_traded": 810000000,
+        "total_net_assets": 10940000000,
+        "cum_net_inflow": 3933300000
+      },
+      {
+        "date": "2026-11-11",
+        "total_net_inflow": 27400000,
+        "total_value_traded": 392000000,
+        "total_net_assets": 10810000000,
+        "cum_net_inflow": 3820700000
+      },
+      {
+        "date": "2026-11-10",
+        "total_net_inflow": -11200000,
+        "total_value_traded": 356000000,
+        "total_net_assets": 10760000000,
+        "cum_net_inflow": 3793300000
+      }
+    ],
+    "ssiConstituents": {
+      "ssimag7": [
+        {
+          "symbol": "BTC",
+          "weight": 0.31
+        },
+        {
+          "symbol": "ETH",
+          "weight": 0.22
+        },
+        {
+          "symbol": "XRP",
+          "weight": 0.14
+        },
+        {
+          "symbol": "SOL",
+          "weight": 0.12
+        },
+        {
+          "symbol": "BNB",
+          "weight": 0.1
+        },
+        {
+          "symbol": "DOGE",
+          "weight": 0.06
+        },
+        {
+          "symbol": "ADA",
+          "weight": 0.05
+        }
+      ],
+      "ssidefi": [
+        {
+          "symbol": "LINK",
+          "weight": 0.34
+        },
+        {
+          "symbol": "AAVE",
+          "weight": 0.26
+        },
+        {
+          "symbol": "UNI",
+          "weight": 0.22
+        },
+        {
+          "symbol": "HYPE",
+          "weight": 0.18
+        }
+      ]
+    },
+    "news": [
+      {
+        "id": "soso-ref-1",
+        "title": "US Spot Bitcoin ETFs Log $248.6M Single-Day Net Inflow as Institutional Basis Widens",
+        "source": "SoSoValue Research",
+        "category": "ETF Flows",
+        "publishedAt": "2026-11-24T04:30:00Z",
+        "sentiment": "bullish"
+      },
+      {
+        "id": "soso-ref-2",
+        "title": "ValueChain EVM Sustains 2-Second Single-Slot Finality Across 107 Active SoDEX Perp Orderbooks",
+        "source": "ValueChain Telemetry",
+        "category": "Infrastructure",
+        "publishedAt": "2026-11-24T03:15:00Z",
+        "sentiment": "neutral"
+      },
+      {
+        "id": "soso-ref-3",
+        "title": "SSI Protocol Monthly Rebalance Window Approaches: Buffer Bands Hold Turnover Below 4.2%",
+        "source": "SoSoValue Indexes",
+        "category": "SSI Index",
+        "publishedAt": "2026-11-24T01:45:00Z",
+        "sentiment": "bullish"
+      },
+      {
+        "id": "soso-ref-4",
+        "title": "Hourly Perp Funding Compression Creates Selective Positive-Carry Pockets in L1 Majors",
+        "source": "BasisDesk Quant Desk",
+        "category": "Derivatives",
+        "publishedAt": "2026-11-24T00:20:00Z",
+        "sentiment": "neutral"
+      }
+    ]
+  }
+}

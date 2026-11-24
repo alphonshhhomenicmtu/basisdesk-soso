@@ -1,0 +1,38 @@
+name: Hourly Market & ETF Snapshot
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Capture live SoDEX, ValueChain, and SoSoValue snapshot
+        env:
+          SOSOVALUE_API_KEY: ${{ secrets.SOSOVALUE_API_KEY }}
+        run: node scripts/fetch-snapshot.mjs
+
+      - name: Commit refreshed snapshot if changed
+        run: |
+          git config user.name "basisdesk-bot"
+          git config user.email "basisdesk-bot@users.noreply.github.com"
+          if ! git diff --quiet public/data/market-snapshot.json; then
+            git add public/data/market-snapshot.json
+            git commit -m "chore(data): refresh hourly SoDEX, ValueChain, and SoSoValue snapshot"
+            git push
+          else
+            echo "Snapshot unchanged; skipping commit."
+          fi
