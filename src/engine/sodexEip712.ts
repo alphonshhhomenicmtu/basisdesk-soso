@@ -81,9 +81,17 @@ export interface SodexSpotOrderItem {
   quantity: string;
 }
 
+export interface SodexBuilderParams {
+  /** Registered SoDEX builderCode (uint64) */
+  id: number;
+  /** Builder fee rate integer in SoDEX protocol units (0.1 bps units, e.g. 10 = 1.0 bps) */
+  fee: number;
+}
+
 export interface SodexSpotBatchOrderParams {
   accountID: number;
   orders: SodexSpotOrderItem[];
+  builder?: SodexBuilderParams;
 }
 
 export interface SodexPerpOrderItem {
@@ -102,6 +110,7 @@ export interface SodexPerpOrderParams {
   accountID: number;
   symbolID: number;
   orders: SodexPerpOrderItem[];
+  builder?: SodexBuilderParams;
 }
 
 export interface SodexEip712Domain {
@@ -177,6 +186,58 @@ export function formatDecimalFixed(value: number, precision: number, minValue = 
   const safe = Number.isFinite(value) ? Math.max(minValue, value) : minValue;
   const clampedPrec = Math.max(0, Math.min(8, Math.round(precision)));
   return safe.toFixed(clampedPrec);
+}
+
+/**
+ * Validates that an accountID is a positive integer (never silently falls back to a fixture ID).
+ */
+export function validateSodexAccountId(raw: unknown): number | null {
+  if (typeof raw === 'number') {
+    return Number.isInteger(raw) && raw > 0 ? raw : null;
+  }
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (!/^\d+$/.test(trimmed)) return null;
+    const parsed = Number.parseInt(trimmed, 10);
+    return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
+  }
+  return null;
+}
+
+/**
+ * Allocates a strictly increasing uint64 millisecond nonce for SoDEX ExchangeAction signing.
+ * Guarantees two legs signed in the same session (even within the same millisecond) never share a nonce.
+ */
+export function allocateMonotonicSodexNonce(
+  previousNonce?: bigint | null,
+  nowMs: number = Date.now(),
+): bigint {
+  const floorNow = BigInt(Math.max(1, Math.trunc(nowMs)));
+  if (previousNonce === undefined || previousNonce === null) {
+    return floorNow;
+  }
+  return floorNow > previousNonce ? floorNow : previousNonce + 1n;
+}
+
+/**
+ * Stateful monotonic nonce allocator for multi-leg Spot + Perp hedge signing sessions.
+ */
+export class SodexNonceAllocator {
+  private lastNonce: bigint | null;
+
+  constructor(initialNonce?: bigint | null) {
+    this.lastNonce = initialNonce ?? null;
+  }
+
+  public next(nowMs: number = Date.now()): bigint {
+    const allocated = allocateMonotonicSodexNonce(this.lastNonce, nowMs);
+    this.lastNonce = allocated;
+    return allocated;
+  }
+
+  public current(): bigint | null {
+    return this.lastNonce;
+  }
 }
 
 export function makeClOrdId(prefix: string, nonce: bigint, idx = 0): string {
@@ -273,6 +334,7 @@ export function buildSpotBatchNewOrderIntent(input: {
   network: SodexNetwork;
   accountID: number;
   nonce?: bigint;
+  builder?: SodexBuilderParams;
   orders: Array<{
     symbolID: number;
     side: 'BUY' | 'SELL';
@@ -283,6 +345,10 @@ export function buildSpotBatchNewOrderIntent(input: {
     clOrdID?: string;
   }>;
 }): SodexExchangeActionIntent {
+  const validAccountId = validateSodexAccountId(input.accountID);
+  if (validAccountId === null) {
+    throw new Error('Valid positive SoDEX spot accountID is required before building batchNewOrder.');
+  }
   const nonce = input.nonce ?? BigInt(Date.now());
   const tifMap = { GTC: 1, IOC: 2, FOK: 3, POST_ONLY: 4 } as const;
 
@@ -296,10 +362,26 @@ export function buildSpotBatchNewOrderIntent(input: {
     quantity: ord.quantity,
   }));
 
-  const params: SodexSpotBatchOrderParams = {
-    accountID: Math.max(1, Math.trunc(input.accountID)),
-    orders: normalizedOrders,
-  };
+  const normalizedBuilder =
+    input.builder &&
+    Number.isInteger(input.builder.id) &&
+    input.builder.id > 0 &&
+    Number.isInteger(input.builder.fee) &&
+    input.builder.fee >= 0
+      ? { id: input.builder.id, fee: input.builder.fee }
+      : undefined;
+
+  // Strict Go struct field order: accountID, orders, builder (omitempty)
+  const params: SodexSpotBatchOrderParams = normalizedBuilder
+    ? {
+        accountID: validAccountId,
+        orders: normalizedOrders,
+        builder: normalizedBuilder,
+      }
+    : {
+        accountID: validAccountId,
+        orders: normalizedOrders,
+      };
 
   return finalizeIntent({
     network: input.network,
@@ -328,28 +410,52 @@ export function buildPerpNewOrderIntent(input: {
   quantity: string;
   reduceOnly?: boolean;
   clOrdID?: string;
+  builder?: SodexBuilderParams;
 }): SodexExchangeActionIntent {
+  const validAccountId = validateSodexAccountId(input.accountID);
+  if (validAccountId === null) {
+    throw new Error('Valid positive SoDEX perps accountID is required before building newOrder.');
+  }
   const nonce = input.nonce ?? BigInt(Date.now());
   const tifMap = { GTC: 1, IOC: 2, FOK: 3, POST_ONLY: 4 } as const;
   const clOrdID = input.clOrdID ?? makeClOrdId('bdperp', nonce, 0);
 
-  const params: SodexPerpOrderParams = {
-    accountID: Math.max(1, Math.trunc(input.accountID)),
-    symbolID: Math.max(1, Math.trunc(input.symbolID)),
-    orders: [
-      {
-        clOrdID,
-        modifier: 1,
-        side: input.side === 'BUY' ? 1 : 2,
-        type: input.orderType === 'LIMIT' ? 1 : 2,
-        timeInForce: tifMap[input.timeInForce],
-        price: input.price,
-        quantity: input.quantity,
-        reduceOnly: Boolean(input.reduceOnly),
-        positionSide: 1,
-      },
-    ],
-  };
+  const normalizedBuilder =
+    input.builder &&
+    Number.isInteger(input.builder.id) &&
+    input.builder.id > 0 &&
+    Number.isInteger(input.builder.fee) &&
+    input.builder.fee >= 0
+      ? { id: input.builder.id, fee: input.builder.fee }
+      : undefined;
+
+  const orders: SodexPerpOrderItem[] = [
+    {
+      clOrdID,
+      modifier: 1,
+      side: input.side === 'BUY' ? 1 : 2,
+      type: input.orderType === 'LIMIT' ? 1 : 2,
+      timeInForce: tifMap[input.timeInForce],
+      price: input.price,
+      quantity: input.quantity,
+      reduceOnly: Boolean(input.reduceOnly),
+      positionSide: 1,
+    },
+  ];
+
+  // Strict Go struct field order: accountID, symbolID, orders, builder (omitempty)
+  const params: SodexPerpOrderParams = normalizedBuilder
+    ? {
+        accountID: validAccountId,
+        symbolID: Math.max(1, Math.trunc(input.symbolID)),
+        orders,
+        builder: normalizedBuilder,
+      }
+    : {
+        accountID: validAccountId,
+        symbolID: Math.max(1, Math.trunc(input.symbolID)),
+        orders,
+      };
 
   return finalizeIntent({
     network: input.network,

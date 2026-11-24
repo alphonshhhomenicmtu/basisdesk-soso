@@ -150,7 +150,7 @@ export default function App() {
                   BasisDesk
                 </span>
                 <span className="rounded border border-sky-500/30 bg-sky-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-sky-300">
-                  V2 QUANT
+                  V2.1 QUANT
                 </span>
               </div>
               <p className="text-[10.5px] text-slate-400">
@@ -334,7 +334,7 @@ export default function App() {
       <footer className="mt-6 border-t border-slate-800/80 bg-[#070A0F] py-4">
         <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-2 px-4 text-[11px] text-slate-500 sm:px-6">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold text-slate-400">BasisDesk v2.0</span>
+            <span className="font-semibold text-slate-400">BasisDesk v2.1</span>
             <span>•</span>
             <span>
               Non-custodial EIP-712 dry-run &amp; paper blotter • Zero silent mainnet broadcast • Analytical tooling, not financial advice

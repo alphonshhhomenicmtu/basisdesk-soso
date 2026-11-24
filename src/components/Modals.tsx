@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
   Check,
@@ -22,6 +22,8 @@ import {
   signIntentWithEphemeralDryRunKey,
   signIntentWithInjectedWallet,
   SODEX_NETWORKS,
+  SodexNonceAllocator,
+  validateSodexAccountId,
   type SignedSodexEnvelope,
   type SodexExchangeActionIntent,
 } from '../engine/sodexEip712';
@@ -80,7 +82,7 @@ export interface WalletContextView {
   providerLabel: string;
   connecting: boolean;
   error: string | null;
-  sodexAccountIds: Record<SodexNetwork, number | null>;
+  sodexAccountIds: Record<SodexNetwork, { spot: number | null; perps: number | null }>;
   connect: () => Promise<boolean>;
   disconnect: () => void;
 }
@@ -99,8 +101,12 @@ export function ExecutionConfirmModal({
   const [mode, setMode] = useState<'eip712' | 'paper'>('eip712');
   const [network, setNetwork] = useState<SodexNetwork>('testnet');
   const [legChoice, setLegChoice] = useState<'spot' | 'perp'>('spot');
-  const [accountIdInput, setAccountIdInput] = useState<string>('1001');
-  const [nonceSeed, setNonceSeed] = useState<bigint>(() => BigInt(Date.now()));
+  const [accountIdInput, setAccountIdInput] = useState<string>('');
+  const [builderIdInput, setBuilderIdInput] = useState<string>('');
+  const [builderFeeInput, setBuilderFeeInput] = useState<string>('10');
+  const nonceAllocatorRef = useRef<SodexNonceAllocator>(new SodexNonceAllocator());
+  const [nonceSeed, setNonceSeed] = useState<bigint>(() => nonceAllocatorRef.current.next());
+  const [signedNoncesByLeg, setSignedNoncesByLeg] = useState<{ spot?: string; perp?: string }>({});
   const [mainnetSafetyAck, setMainnetSafetyAck] = useState(false);
   const [paperAckChecked, setPaperAckChecked] = useState(false);
   const [showRawJson, setShowRawJson] = useState(false);
@@ -109,13 +115,20 @@ export function ExecutionConfirmModal({
   const [signedEnvelope, setSignedEnvelope] = useState<SignedSodexEnvelope | null>(null);
   const [copiedCurl, setCopiedCurl] = useState(false);
 
+  const allocateFreshNonce = () => {
+    const next = nonceAllocatorRef.current.next();
+    setNonceSeed(next);
+    return next;
+  };
+
   // Reset per-order signing state whenever a new trade is staged
   useEffect(() => {
     if (!staged) return;
     setMode('eip712');
     setNetwork('testnet');
-    setLegChoice(staged.strategyType === 'SSI_REBALANCE' ? 'spot' : 'spot');
-    setNonceSeed(BigInt(Date.now()));
+    setLegChoice('spot');
+    setNonceSeed(nonceAllocatorRef.current.next());
+    setSignedNoncesByLeg({});
     setMainnetSafetyAck(false);
     setPaperAckChecked(false);
     setSignedEnvelope(null);
@@ -123,18 +136,33 @@ export function ExecutionConfirmModal({
     setShowRawJson(false);
   }, [staged]);
 
-  // Sync resolved live SoDEX accountID when wallet connects or network toggles
-  useEffect(() => {
-    const resolved = wallet.sodexAccountIds[network];
-    if (resolved && resolved > 0) {
-      setAccountIdInput(String(resolved));
-    }
-  }, [wallet.sodexAccountIds, network]);
+  const isSpotAction = staged?.strategyType === 'SSI_REBALANCE' || legChoice === 'spot';
+  const activeDomainKey: 'spot' | 'perps' = isSpotAction ? 'spot' : 'perps';
+  const resolvedAccountId = wallet.sodexAccountIds[network][activeDomainKey];
 
-  const parsedAccountId = Math.max(1, Number.parseInt(accountIdInput, 10) || 1001);
+  // Sync resolved live SoDEX accountID when wallet connects, network toggles, or leg switches
+  useEffect(() => {
+    if (resolvedAccountId && resolvedAccountId > 0) {
+      setAccountIdInput(String(resolvedAccountId));
+    } else {
+      setAccountIdInput('');
+    }
+  }, [resolvedAccountId, network, activeDomainKey]);
+
+  const parsedAccountId = validateSodexAccountId(accountIdInput);
+  const parsedBuilderId = validateSodexAccountId(builderIdInput);
+  const parsedBuilderFee = /^\d+$/.test(builderFeeInput.trim())
+    ? Number.parseInt(builderFeeInput.trim(), 10)
+    : 0;
+  const activeBuilder =
+    parsedBuilderId !== null
+      ? { id: parsedBuilderId, fee: Math.max(0, Math.min(100, parsedBuilderFee)) }
+      : undefined;
+  const hasResolvedAccountId =
+    resolvedAccountId !== null && parsedAccountId !== null && parsedAccountId === resolvedAccountId;
 
   const activeIntent = useMemo<SodexExchangeActionIntent | null>(() => {
-    if (!staged) return null;
+    if (!staged || parsedAccountId === null) return null;
     const tif = staged.executionMode === 'TAKER' ? 'IOC' : 'POST_ONLY';
     const orderType = staged.executionMode === 'TAKER' ? 'MARKET' : 'LIMIT';
 
@@ -144,6 +172,7 @@ export function ExecutionConfirmModal({
           network,
           accountID: parsedAccountId,
           nonce: nonceSeed,
+          builder: activeBuilder,
           orders: staged.ssiBatchLegs.map((leg) => ({
             symbolID: leg.symbolID,
             side: leg.side,
@@ -161,6 +190,7 @@ export function ExecutionConfirmModal({
         network,
         accountID: parsedAccountId,
         nonce: nonceSeed,
+        builder: activeBuilder,
         orders: [
           {
             symbolID: staged.spotSymbolId ?? 1,
@@ -181,6 +211,7 @@ export function ExecutionConfirmModal({
       accountID: parsedAccountId,
       symbolID: staged.perpSymbolId ?? 1,
       nonce: nonceSeed,
+      builder: activeBuilder,
       side: 'SELL', // Short perp hedges Long spot
       orderType,
       timeInForce: tif,
@@ -188,34 +219,42 @@ export function ExecutionConfirmModal({
       quantity: formatDecimalFixed(perpQty, staged.perpQuantityPrecision ?? 4, 0.0001),
       reduceOnly: false,
     });
-  }, [staged, legChoice, network, parsedAccountId, nonceSeed]);
+  }, [staged, legChoice, network, parsedAccountId, nonceSeed, activeBuilder]);
 
-  if (!staged || !activeIntent) return null;
+  if (!staged) return null;
 
   const isBlocked = staged.guardrails.overallStatus === 'BLOCK';
   const netCfg = SODEX_NETWORKS[network];
   const needsMainnetAck = network === 'mainnet' && !mainnetSafetyAck;
+  const accountStatePath = isSpotAction
+    ? `/spot/accounts/{address}/state`
+    : `/perps/accounts/{address}/state`;
+  const previewEndpointUrl = `${netCfg.restBase}${isSpotAction ? '/spot/trade/orders/batch' : '/perps/trade/orders'}`;
+  const canCopySubmitCurl =
+    Boolean(signedEnvelope) &&
+    signedEnvelope?.mode === 'WALLET_EIP1193' &&
+    hasResolvedAccountId;
 
-  const handleWalletSign = async () => {
+  const handleConnectOrSignWallet = async () => {
     setSignError(null);
+    if (!wallet.address) {
+      await wallet.connect();
+      return;
+    }
+    if (!hasResolvedAccountId || !activeIntent) {
+      setSignError(
+        `Wallet signing is blocked until an activated ${activeDomainKey} accountID is resolved from ${accountStatePath} on ${netCfg.label}.`,
+      );
+      return;
+    }
     setSigning(true);
     try {
-      let addr = wallet.address;
-      if (!addr) {
-        const ok = await wallet.connect();
-        if (!ok) {
-          setSigning(false);
-          return;
-        }
-        // Wait for state or pull from window.ethereum
-        const accounts = (await window.ethereum?.request({ method: 'eth_accounts' })) as string[] | undefined;
-        addr = (accounts?.[0] as `0x${string}` | undefined) ?? null;
-      }
-      if (!addr) {
-        throw new Error('No wallet account authorized.');
-      }
-      const env = await signIntentWithInjectedWallet(activeIntent, addr);
+      const env = await signIntentWithInjectedWallet(activeIntent, wallet.address);
       setSignedEnvelope(env);
+      setSignedNoncesByLeg((prev) => ({
+        ...prev,
+        [isSpotAction ? 'spot' : 'perp']: env.intent.nonceStr,
+      }));
     } catch (err) {
       setSignError(err instanceof Error ? err.message : 'Wallet EIP-712 signing rejected or failed');
     } finally {
@@ -225,10 +264,20 @@ export function ExecutionConfirmModal({
 
   const handleDryRunSign = async () => {
     setSignError(null);
+    if (!activeIntent) {
+      setSignError(
+        'Enter a positive numeric test accountID (or connect an activated SoDEX wallet) before running local ecrecover verification.',
+      );
+      return;
+    }
     setSigning(true);
     try {
       const env = await signIntentWithEphemeralDryRunKey(activeIntent);
       setSignedEnvelope(env);
+      setSignedNoncesByLeg((prev) => ({
+        ...prev,
+        [isSpotAction ? 'spot' : 'perp']: env.intent.nonceStr,
+      }));
     } catch (err) {
       setSignError(err instanceof Error ? err.message : 'Local cryptographic dry-run failed');
     } finally {
@@ -237,7 +286,7 @@ export function ExecutionConfirmModal({
   };
 
   const handleCopyCurl = async () => {
-    if (!signedEnvelope) return;
+    if (!signedEnvelope || !canCopySubmitCurl) return;
     try {
       await navigator.clipboard.writeText(signedEnvelope.curlCommand);
       setCopiedCurl(true);
@@ -383,6 +432,7 @@ export function ExecutionConfirmModal({
                       type="button"
                       onClick={() => {
                         setNetwork(net);
+                        allocateFreshNonce();
                         setSignedEnvelope(null);
                         setMainnetSafetyAck(false);
                       }}
@@ -402,15 +452,18 @@ export function ExecutionConfirmModal({
 
               <div className="rounded-lg border border-slate-800 bg-[#080B10]/80 p-2 sm:col-span-5">
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-                  SoDEX Action Type
+                  SoDEX Action Type (Distinct Nonce / Leg)
                 </span>
                 {staged.strategyType === 'DELTA_NEUTRAL_BASIS' ? (
                   <div className="mt-1 grid grid-cols-2 gap-1">
                     <button
                       type="button"
                       onClick={() => {
-                        setLegChoice('spot');
-                        setSignedEnvelope(null);
+                        if (legChoice !== 'spot') {
+                          setLegChoice('spot');
+                          allocateFreshNonce();
+                          setSignedEnvelope(null);
+                        }
                       }}
                       className={`whitespace-nowrap rounded px-2 py-1 font-mono text-[10.5px] font-semibold transition ${
                         legChoice === 'spot'
@@ -423,8 +476,11 @@ export function ExecutionConfirmModal({
                     <button
                       type="button"
                       onClick={() => {
-                        setLegChoice('perp');
-                        setSignedEnvelope(null);
+                        if (legChoice !== 'perp') {
+                          setLegChoice('perp');
+                          allocateFreshNonce();
+                          setSignedEnvelope(null);
+                        }
                       }}
                       className={`whitespace-nowrap rounded px-2 py-1 font-mono text-[10.5px] font-semibold transition ${
                         legChoice === 'perp'
@@ -445,12 +501,12 @@ export function ExecutionConfirmModal({
               <div className="rounded-lg border border-slate-800 bg-[#080B10]/80 p-2 sm:col-span-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-                    accountID
+                    {activeDomainKey} accountID
                   </span>
                   <button
                     type="button"
                     onClick={() => {
-                      setNonceSeed(BigInt(Date.now()));
+                      allocateFreshNonce();
                       setSignedEnvelope(null);
                     }}
                     className="font-mono text-[10px] text-sky-400 hover:text-sky-300"
@@ -461,15 +517,101 @@ export function ExecutionConfirmModal({
                 <input
                   type="number"
                   min={1}
+                  placeholder="Unresolved"
                   value={accountIdInput}
                   onChange={(e) => {
                     setAccountIdInput(e.target.value);
                     setSignedEnvelope(null);
                   }}
-                  className="mt-1 w-full rounded border border-slate-700 bg-slate-950 px-2 py-1 font-mono text-xs text-slate-100 focus:border-sky-400 focus:outline-none"
+                  className="mt-1 w-full rounded border border-slate-700 bg-slate-950 px-2 py-1 font-mono text-xs text-slate-100 placeholder:text-slate-600 focus:border-sky-400 focus:outline-none"
                 />
               </div>
             </div>
+
+            {/* Optional SoDEX Builder Fee Attribution + Per-Order Cost Breakdown */}
+            <div className="grid grid-cols-1 gap-2 rounded-lg border border-slate-800/80 bg-[#080B10]/80 p-2.5 sm:grid-cols-12">
+              <div className="sm:col-span-5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                    Optional SoDEX Builder Attribution (omitempty)
+                  </span>
+                  <span className="font-mono text-[9.5px] text-slate-500">
+                    {activeBuilder ? `id:${activeBuilder.id} fee:${(activeBuilder.fee / 10).toFixed(1)}bp` : 'Omitted'}
+                  </span>
+                </div>
+                <div className="mt-1 grid grid-cols-2 gap-1.5">
+                  <input
+                    type="number"
+                    min={1}
+                    placeholder="builder.id"
+                    value={builderIdInput}
+                    onChange={(e) => {
+                      setBuilderIdInput(e.target.value);
+                      allocateFreshNonce();
+                      setSignedEnvelope(null);
+                    }}
+                    className="w-full rounded border border-slate-700 bg-slate-950 px-2 py-1 font-mono text-[11px] text-slate-100 placeholder:text-slate-600 focus:border-sky-400 focus:outline-none"
+                  />
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    placeholder="fee (0.1bp)"
+                    value={builderFeeInput}
+                    onChange={(e) => {
+                      setBuilderFeeInput(e.target.value);
+                      allocateFreshNonce();
+                      setSignedEnvelope(null);
+                    }}
+                    className="w-full rounded border border-slate-700 bg-slate-950 px-2 py-1 font-mono text-[11px] text-slate-100 placeholder:text-slate-600 focus:border-sky-400 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-1.5 font-mono text-[10.5px] tabular-nums sm:col-span-7">
+                <div className="rounded border border-slate-800/80 bg-slate-950/70 px-2 py-1">
+                  <div className="font-sans text-[9.5px] text-slate-500">Margin ({staged.leverage}x)</div>
+                  <div className="text-slate-200">{formatUsd(staged.notionalUsd / Math.max(1, staged.leverage), 0)}</div>
+                </div>
+                <div className="rounded border border-slate-800/80 bg-slate-950/70 px-2 py-1">
+                  <div className="font-sans text-[9.5px] text-slate-500">SoDEX Fee</div>
+                  <div className="text-rose-300">-{formatUsd(staged.estimatedFeesUsd)}</div>
+                </div>
+                <div className="rounded border border-slate-800/80 bg-slate-950/70 px-2 py-1">
+                  <div className="font-sans text-[9.5px] text-slate-500">Builder Fee</div>
+                  <div className="text-amber-300">
+                    {activeBuilder
+                      ? `-${formatUsd(staged.notionalUsd * (activeBuilder.fee / 100000))}`
+                      : '$0.00'}
+                  </div>
+                </div>
+                <div className="rounded border border-slate-800/80 bg-slate-950/70 px-2 py-1">
+                  <div className="font-sans text-[9.5px] text-slate-500">24h Funding</div>
+                  <div className="text-emerald-300">
+                    {staged.entryHourlyFundingRate >= 0 ? '+' : ''}
+                    {formatUsd(staged.notionalUsd * staged.entryHourlyFundingRate * 24)}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Resolved AccountID Status Gate */}
+            {hasResolvedAccountId ? (
+              <div className="flex items-center justify-between rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-3 py-1.5 text-[11px] text-emerald-200">
+                <span>
+                  Resolved live {activeDomainKey} accountID{' '}
+                  <strong className="font-mono">{resolvedAccountId}</strong> from{' '}
+                  <code className="text-emerald-100">{accountStatePath}</code>
+                </span>
+                <span className="font-mono text-[10px] text-emerald-300">ACCOUNT VERIFIED</span>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200">
+                <strong className="text-amber-100">Account ID not resolved from SoDEX state:</strong>{' '}
+                No activated <code className="text-amber-100">{activeDomainKey}</code> accountID was returned by{' '}
+                <code className="text-amber-100">{accountStatePath}</code> on {netCfg.label}. Wallet signing and cURL submit copy remain disabled until a live accountID resolves. You may enter a positive test ID above solely for non-submittable local <code className="text-amber-100">ecrecover</code> schema checks.
+              </div>
+            )}
 
             {/* Explicit Mainnet Safety Gate */}
             {network === 'mainnet' && (
@@ -494,59 +636,73 @@ export function ExecutionConfirmModal({
                   <FileCode2 className="h-3.5 w-3.5 text-sky-400" />
                   <span>EIP-712 ExchangeAction Typed-Data Envelope</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowRawJson((v) => !v)}
-                  className="text-[10.5px] text-sky-400 hover:text-sky-300"
-                >
-                  {showRawJson ? 'Hide Canonical JSON' : 'Inspect Full Typed JSON'}
-                </button>
+                {activeIntent && (
+                  <button
+                    type="button"
+                    onClick={() => setShowRawJson((v) => !v)}
+                    className="text-[10.5px] text-sky-400 hover:text-sky-300"
+                  >
+                    {showRawJson ? 'Hide Canonical JSON' : 'Inspect Full Typed JSON'}
+                  </button>
+                )}
               </div>
 
               <div className="mt-2.5 grid grid-cols-1 gap-x-4 gap-y-1.5 sm:grid-cols-2">
                 <div className="flex justify-between gap-2">
                   <span className="text-slate-500">domain.name / version</span>
                   <span className="text-sky-300">
-                    &quot;{activeIntent.domain.name}&quot; / v{activeIntent.domain.version}
+                    &quot;{isSpotAction ? 'spot' : 'futures'}&quot; / v1
                   </span>
                 </div>
                 <div className="flex justify-between gap-2">
                   <span className="text-slate-500">domain.chainId</span>
                   <span className={network === 'mainnet' ? 'text-rose-300' : 'text-emerald-300'}>
-                    {activeIntent.domain.chainId} ({netCfg.chainIdHex})
+                    {netCfg.chainId} ({netCfg.chainIdHex})
                   </span>
                 </div>
                 <div className="flex justify-between gap-2">
                   <span className="text-slate-500">primaryType</span>
-                  <span className="text-slate-100">{activeIntent.primaryType}</span>
+                  <span className="text-slate-100">ExchangeAction</span>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <span className="text-slate-500">nonce (uint64 ms)</span>
-                  <span className="text-slate-200 tabular-nums">{activeIntent.nonceStr}</span>
+                  <span className="text-slate-500">nonce (monotonic uint64)</span>
+                  <span className="text-slate-200 tabular-nums">{nonceSeed.toString()}</span>
                 </div>
+                {(signedNoncesByLeg.spot || signedNoncesByLeg.perp) && (
+                  <div className="flex justify-between gap-2 sm:col-span-2">
+                    <span className="shrink-0 text-slate-500">Session leg nonces</span>
+                    <span className="truncate text-emerald-300 tabular-nums">
+                      Spot: {signedNoncesByLeg.spot ?? 'pending'} • Perp: {signedNoncesByLeg.perp ?? 'pending'}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between gap-2 sm:col-span-2">
                   <span className="shrink-0 text-slate-500">verifyingContract</span>
                   <span className="truncate text-slate-300">
-                    {activeIntent.domain.verifyingContract}
+                    {netCfg.verifyingContract}
                   </span>
                 </div>
                 <div className="flex justify-between gap-2 sm:col-span-2">
                   <span className="shrink-0 text-slate-500">payloadHash (bytes32)</span>
-                  <span className="truncate text-emerald-300">{activeIntent.payloadHash}</span>
+                  <span className="truncate text-emerald-300">
+                    {activeIntent ? activeIntent.payloadHash : 'Awaiting valid accountID'}
+                  </span>
                 </div>
                 <div className="flex justify-between gap-2 sm:col-span-2">
                   <span className="shrink-0 text-slate-500">EIP-712 digest</span>
-                  <span className="truncate text-violet-300">{activeIntent.typedDataHash}</span>
+                  <span className="truncate text-violet-300">
+                    {activeIntent ? activeIntent.typedDataHash : 'Awaiting valid accountID'}
+                  </span>
                 </div>
                 <div className="flex justify-between gap-2 sm:col-span-2">
                   <span className="shrink-0 text-slate-500">Target Endpoint</span>
                   <span className="truncate text-slate-300">
-                    {activeIntent.httpMethod} {activeIntent.endpointUrl}
+                    POST {activeIntent ? activeIntent.endpointUrl : previewEndpointUrl}
                   </span>
                 </div>
               </div>
 
-              {showRawJson && (
+              {showRawJson && activeIntent && (
                 <pre className="mt-2.5 max-h-44 overflow-auto rounded-lg border border-slate-800 bg-[#04060A] p-2.5 text-[10px] leading-relaxed text-sky-200">
                   {JSON.stringify(
                     {
@@ -560,30 +716,38 @@ export function ExecutionConfirmModal({
               )}
             </div>
 
-            {/* Action Buttons: Wallet Sign OR Local Cryptographic Dry-Run */}
+            {/* Action Buttons: Wallet Sign (requires resolved accountID) OR Local Cryptographic Dry-Run */}
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                disabled={signing || needsMainnetAck}
-                onClick={() => void handleWalletSign()}
+                disabled={
+                  signing ||
+                  wallet.connecting ||
+                  (Boolean(wallet.address) && (!hasResolvedAccountId || needsMainnetAck))
+                }
+                onClick={() => void handleConnectOrSignWallet()}
                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-sky-500 px-3.5 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500"
               >
                 <Wallet className="h-3.5 w-3.5" />
                 {signing
                   ? 'Awaiting Signature...'
-                  : wallet.address
-                    ? `Sign via Wallet (${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)})`
-                    : 'Connect & Sign with MetaMask / EIP-1193'}
+                  : !wallet.address
+                    ? 'Connect Wallet to Resolve accountID'
+                    : hasResolvedAccountId
+                      ? `Sign via Wallet (${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)})`
+                      : `Wallet Sign Blocked (No ${activeDomainKey} accountID)`}
               </button>
 
               <button
                 type="button"
-                disabled={signing || needsMainnetAck}
+                disabled={signing || needsMainnetAck || !activeIntent}
                 onClick={() => void handleDryRunSign()}
                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-emerald-500/40 bg-emerald-500/12 px-3.5 py-2.5 text-xs font-semibold text-emerald-200 transition hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
-                Verify Cryptographic Dry-Run (No Wallet)
+                {activeIntent
+                  ? 'Local ecrecover Schema Check (Non-Submittable)'
+                  : 'Enter Test ID for Local ecrecover Check'}
               </button>
             </div>
 
@@ -616,14 +780,14 @@ export function ExecutionConfirmModal({
                     <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                     <span>
                       {signedEnvelope.verified
-                        ? 'Signature Cryptographically Verified (secp256k1 ecrecover MATCH)'
+                        ? 'Local secp256k1 ecrecover MATCH (0x01 Prefix Verified)'
                         : 'Signature Verification Mismatch'}
                     </span>
                   </div>
                   <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-200">
                     {signedEnvelope.mode === 'WALLET_EIP1193'
                       ? 'EIP-1193 WALLET SIGNED'
-                      : 'EPHEMERAL DRY-RUN KEY'}
+                      : 'EPHEMERAL DRY-RUN (UNREGISTERED)'}
                   </span>
                 </div>
 
@@ -640,24 +804,35 @@ export function ExecutionConfirmModal({
                   </div>
                 </div>
 
-                <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-emerald-500/20 pt-1.5">
-                  <span className="font-sans text-[11px] text-slate-400">
-                    Dry-run complete — order NOT auto-broadcast to exchange.
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-emerald-500/20 pt-2">
+                  <span className="max-w-lg font-sans text-[11px] leading-snug text-slate-300">
+                    Master-wallet signatures omit <code className="text-sky-300">X-API-Key</code>; a registered API key is what SoDEX recommends for trading. This dry-run key is not registered and must not be posted.
                   </span>
                   <button
                     type="button"
+                    disabled={!canCopySubmitCurl}
                     onClick={() => void handleCopyCurl()}
-                    className="inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-900 px-2.5 py-1 font-sans text-[11px] font-medium text-slate-200 hover:border-sky-500/50 hover:text-sky-300"
+                    title={
+                      canCopySubmitCurl
+                        ? 'Copy signed cURL for manual submission'
+                        : 'Submit cURL copy is disabled unless signed by a connected wallet with a live accountID resolved from SoDEX account state'
+                    }
+                    className="inline-flex shrink-0 items-center gap-1 rounded border border-slate-700 bg-slate-900 px-2.5 py-1 font-sans text-[11px] font-medium text-slate-200 hover:border-sky-500/50 hover:text-sky-300 disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     {copiedCurl ? (
                       <>
                         <Check className="h-3 w-3 text-emerald-400" />
                         Copied Signed cURL
                       </>
-                    ) : (
+                    ) : canCopySubmitCurl ? (
                       <>
                         <Copy className="h-3 w-3" />
                         Copy Signed cURL
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3 w-3" />
+                        cURL Copy Disabled (Dry-Run)
                       </>
                     )}
                   </button>

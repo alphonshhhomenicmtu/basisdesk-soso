@@ -204,7 +204,7 @@ export function RiskStressLab({
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-sm font-semibold text-slate-100">
                   {labMode === 'historical'
-                    ? '30-Day Historical SoDEX Klines & Funding Basis Replay'
+                    ? '30-Day Historical SoDEX Klines & Basis Proxy Replay'
                     : '1,000-Path Deterministic Monte Carlo Liquidation & VaR Lab'}
                 </h2>
                 {labMode === 'historical' && (
@@ -213,8 +213,8 @@ export function RiskStressLab({
               </div>
               <p className="text-[11px] text-slate-400">
                 {labMode === 'historical'
-                  ? `Real matched SoDEX Perp & Spot 4h candles (${backtest.startIso.slice(0, 10)} → ${backtest.endIso.slice(0, 10)}) with official SoDEX hourly funding formula & intra-bar high-wick liquidation audit`
-                  : 'Seeded Mulberry32 + Box-Muller coupled Spot-Perp GBM, Poisson jump shocks, OU funding & SoDEX tiered maintenance margins'}
+                  ? `Matched SoDEX Perp & Spot 4h candles (${backtest.startIso.slice(0, 10)} → ${backtest.endIso.slice(0, 10)}, ${backtest.windowDays.toFixed(1)}d / ${backtest.accruedHours}h) • Close-to-close proxy of 8h/8 clamp (not settled 5s impact prints) • In-sample slices • Round-trip fees (9.4 bps maker / 21.0 bps taker)`
+                  : 'Model simulation (not settled exchange fills) • Seeded Mulberry32 + Box-Muller coupled Spot-Perp GBM, Poisson jump shocks, OU funding & SoDEX tiered maintenance margins'}
               </p>
             </div>
           </div>
@@ -333,9 +333,9 @@ export function RiskStressLab({
             <>
               <div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Execution Fee Tier</span>
+                  <span className="text-slate-400">Round-Trip Fee Tier</span>
                   <span className="font-mono font-semibold text-emerald-300">
-                    {executionMode}
+                    {executionMode} ({backtest.roundTripFeeBps.toFixed(1)} bps RT)
                   </span>
                 </div>
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5">
@@ -350,7 +350,7 @@ export function RiskStressLab({
                           : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200'
                       }`}
                     >
-                      {m} ({m === 'MAKER' ? '4.7 bps' : '10.5 bps'})
+                      {m} ({m === 'MAKER' ? '9.4 bps RT' : '21.0 bps RT'})
                     </button>
                   ))}
                 </div>
@@ -358,14 +358,19 @@ export function RiskStressLab({
 
               <div className="flex flex-col justify-center">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">30d Avg Basis / Funding</span>
+                  <span className="text-slate-400">Close-Basis Proxy vs Live Funding</span>
                   <span className="font-mono font-semibold text-sky-300 tabular-nums">
-                    {formatBps(backtest.avgBasisBps)}
+                    {formatBps(backtest.avgBasisBps)} avg
                   </span>
                 </div>
                 <div className="mt-1.5 flex justify-between font-mono text-[11px] text-slate-400 tabular-nums">
-                  <span>Range: {formatBps(backtest.minBasisBps, 0)} .. {formatBps(backtest.maxBasisBps, 0)}</span>
-                  <span className="text-emerald-300">{formatPct(backtest.avgAnnualizedFundingPct, 1)} ann</span>
+                  <span>Proxy: {formatPct(backtest.avgAnnualizedFundingPct, 1)} ann</span>
+                  <span className="text-emerald-300">
+                    Live now:{' '}
+                    {backtest.liveFundingComparison
+                      ? `${formatPct(backtest.liveFundingComparison.liveAnnualizedPct, 1)} ann`
+                      : '--'}
+                  </span>
                 </div>
               </div>
             </>
@@ -449,11 +454,11 @@ export function RiskStressLab({
       {/* MODE 1: 30-DAY HISTORICAL SODEX KLINES & FUNDING REPLAY */}
       {labMode === 'historical' ? (
         <>
-          {/* 5 Institutional Historical Replay KPIs */}
+          {/* 5 Honest Historical Replay KPIs */}
           <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-5">
             <div className="panel-surface rounded-xl p-4">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                30d Realized Carry PnL
+                Model Carry PnL (Proxy)
               </span>
               <div
                 className={`mt-2 font-mono text-xl font-bold tabular-nums ${
@@ -463,13 +468,16 @@ export function RiskStressLab({
                 {formatSignedUsd(backtest.netPnlUsd, 0)}
               </div>
               <p className="mt-1 font-mono text-[11px] text-slate-400 tabular-nums">
-                {formatPct(backtest.totalReturnPct)} ({formatPct(backtest.annualizedCarryApyPct, 1)} APY)
+                {formatPct(backtest.totalReturnPct)} ({backtest.windowDays.toFixed(1)}d)
+                {backtest.liveFundingComparison
+                  ? ` • Live rate: ${formatSignedUsd(backtest.liveFundingComparison.netPnlAtLiveRateUsd, 0)}`
+                  : ''}
               </p>
             </div>
 
             <div className="panel-surface rounded-xl p-4">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                Alpha vs. Spot Buy &amp; Hold
+                Hedged Spread vs. Spot B&amp;H
               </span>
               <div
                 className={`mt-2 font-mono text-xl font-bold tabular-nums ${
@@ -479,25 +487,25 @@ export function RiskStressLab({
                 {formatPct(backtest.alphaVsSpotPct)}
               </div>
               <p className="mt-1 font-mono text-[11px] text-slate-400 tabular-nums">
-                Spot B&amp;H: {formatPct(backtest.spotBenchmarkReturnPct)}
+                Hedged {formatPct(backtest.totalReturnPct)} vs Spot {formatPct(backtest.spotBenchmarkReturnPct)}
               </p>
             </div>
 
             <div className="panel-surface rounded-xl p-4">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                Sharpe / Sortino Ratio
+                Period Excess Ret / Vol ({backtest.windowDays.toFixed(1)}d)
               </span>
               <div className="mt-2 font-mono text-xl font-bold text-slate-100 tabular-nums">
-                {backtest.annualizedSharpe.toFixed(2)} / {backtest.annualizedSortino.toFixed(2)}
+                {backtest.periodReturnToVol.toFixed(2)} / {backtest.periodDownsideRatio.toFixed(2)}
               </div>
               <p className="mt-1 font-mono text-[11px] text-slate-400 tabular-nums">
-                Win Rate {backtest.winRatePct.toFixed(1)}% ({backtest.barsCount}×4h)
+                Unannualized (vs {backtest.riskFreeAnnualPct.toFixed(1)}% Rf) • r&gt;0: {backtest.winRatePct.toFixed(1)}%
               </p>
             </div>
 
             <div className="panel-surface rounded-xl p-4">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                Max Drawdown (Hedged)
+                Intra-Bar DD &amp; Margin Peak
               </span>
               <div
                 className={`mt-2 font-mono text-xl font-bold tabular-nums ${
@@ -507,14 +515,14 @@ export function RiskStressLab({
                 -{backtest.maxDrawdownPct.toFixed(2)}%
               </div>
               <p className="mt-1 font-mono text-[11px] text-slate-400 tabular-nums">
-                vs. Spot DD -{backtest.spotMaxDrawdownPct.toFixed(1)}%
+                Perp margin DD -{backtest.perpMaxMarginDrawdownPct.toFixed(1)}% • Spot -{backtest.spotMaxDrawdownPct.toFixed(1)}%
               </p>
             </div>
 
             <div className="panel-surface rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                  Historical Liquidation Audit
+                  Wick Liquidation Check
                 </span>
                 <Flame
                   className={`h-3.5 w-3.5 ${
@@ -527,17 +535,17 @@ export function RiskStressLab({
                   backtest.liquidationEvent ? 'text-rose-400' : 'text-emerald-400'
                 }`}
               >
-                {backtest.liquidationEvent ? 'BREACHED' : '0 BREACHES'}
+                {backtest.liquidationEvent ? 'WICK BREACHED' : '0 WICK BREACHES'}
               </div>
               <p className="mt-1 font-mono text-[11px] text-slate-400 tabular-nums">
                 {backtest.liquidationEvent
-                  ? `Wick $${formatPrice(backtest.liquidationEvent.triggerHighPrice)} (${backtest.liquidationEvent.timestampIso.slice(5, 10)})`
-                  : `Funding ${formatSignedUsd(backtest.cumulativeFundingUsd, 0)} • Fees -${formatUsd(backtest.totalFeesUsd, 0)}`}
+                  ? `Wick $${formatPrice(backtest.liquidationEvent.triggerHighPrice)} vs Liq $${formatPrice(backtest.liquidationEvent.liquidationThresholdPrice)}`
+                  : `Proxy fund ${formatSignedUsd(backtest.cumulativeFundingUsd, 0)} • Fees -${formatUsd(backtest.totalFeesUsd, 0)}`}
               </p>
             </div>
           </div>
 
-          {/* Main Replay Chart (Left) + Rolling Signal Track Record (Right) */}
+          {/* Main Replay Chart (Left) + In-Sample 5-Day Slices (Right) */}
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
             <div className="panel-surface rounded-xl p-4 xl:col-span-7">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -545,16 +553,16 @@ export function RiskStressLab({
                   <div className="flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-emerald-400" />
                     <h3 className="text-sm font-semibold text-slate-100">
-                      30-Day Real Equity Replay ({backtest.perpSymbol} vs. {backtest.spotSymbol})
+                      Model Equity Curve ({backtest.perpSymbol} vs. {backtest.spotSymbol})
                     </h3>
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    Initial Capital {formatUsd(backtest.initialCapitalUsd, 0)} • Matched 4h candles from <code className="text-slate-300">mainnet-gw.sodex.dev</code>
+                    Initial Capital {formatUsd(backtest.initialCapitalUsd, 0)} • {backtest.barsCount} matched 4h candles ({backtest.accruedHours}h accrued) from <code className="text-slate-300">mainnet-gw.sodex.dev</code>
                   </p>
                 </div>
                 <div className="flex items-center gap-3 font-mono text-[10px] text-slate-400">
                   <span className="flex items-center gap-1">
-                    <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" /> Delta-Neutral Carry
+                    <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" /> Model Carry (Proxy)
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="inline-block h-2 w-2 rounded-full bg-slate-400" /> Spot Buy &amp; Hold
@@ -574,7 +582,7 @@ export function RiskStressLab({
 
               <div className="mt-3 grid grid-cols-3 gap-2.5 rounded-lg border border-slate-800 bg-[#080B10]/70 p-2.5 font-mono text-xs tabular-nums">
                 <div>
-                  <div className="font-sans text-[10px] text-slate-500">Final Hedged Equity</div>
+                  <div className="font-sans text-[10px] text-slate-500">Final Model Equity</div>
                   <div className="font-semibold text-emerald-300">
                     {formatUsd(backtest.finalCarryEquityUsd, 0)}
                   </div>
@@ -586,47 +594,54 @@ export function RiskStressLab({
                   </div>
                 </div>
                 <div>
-                  <div className="font-sans text-[10px] text-slate-500">Accrued 30d Funding</div>
+                  <div className="font-sans text-[10px] text-slate-500">
+                    Proxy Funding ({backtest.accruedHours}h)
+                  </div>
                   <div
                     className={`font-semibold ${
                       backtest.cumulativeFundingUsd >= 0 ? 'text-sky-300' : 'text-rose-300'
                     }`}
                   >
                     {formatSignedUsd(backtest.cumulativeFundingUsd, 0)}
+                    {backtest.liveFundingComparison && (
+                      <span className="ml-1.5 text-[10px] font-normal text-slate-400">
+                        (Live: {formatSignedUsd(backtest.liveFundingComparison.fundingAtLiveRateUsd, 0)})
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Rolling 5-Day Historical Signal Track Record (HIT / STOP / DRIFT / OPEN) */}
+            {/* In-Sample 5-Day Slices of One Continuous Position */}
             <div className="panel-surface flex flex-col justify-between rounded-xl p-4 xl:col-span-5">
               <div>
                 <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
                   <div>
                     <h3 className="text-sm font-semibold text-slate-100">
-                      Signal Track Record (HIT / STOP / DRIFT)
+                      In-Sample 5-Day Slices of One Position
                     </h3>
                     <p className="text-[11px] text-slate-400">
-                      Rolling 5-day out-of-sample carry windows audited on real SoDEX klines
+                      Partition of one continuous hedge • HIT requires slice carry above pro-rata fees
                     </p>
                   </div>
-                  <span className="font-mono text-[10px] text-slate-500">6 Cohorts</span>
+                  <span className="font-mono text-[10px] text-slate-500">6 Slices</span>
                 </div>
 
                 <div className="mt-2.5 overflow-x-auto">
                   <table className="w-full text-left font-mono text-[11px] tabular-nums">
                     <thead>
                       <tr className="border-b border-slate-800 text-[10px] uppercase text-slate-500">
-                        <th className="py-1.5">Window</th>
+                        <th className="py-1.5">Slice</th>
                         <th className="py-1.5 text-right">Entry Basis</th>
                         <th className="py-1.5 text-right">Carry</th>
                         <th className="py-1.5 text-right">Spot</th>
-                        <th className="py-1.5 text-right">Outcome</th>
+                        <th className="py-1.5 text-right">Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60">
                       {backtest.signalTrackRecord.map((row) => (
-                        <tr key={row.windowId}>
+                        <tr key={row.windowId} title={row.note}>
                           <td className="py-2">
                             <div className="font-semibold text-slate-200">{row.windowId}</div>
                             <div className="text-[9.5px] text-slate-500">
@@ -638,7 +653,11 @@ export function RiskStressLab({
                           </td>
                           <td
                             className={`py-2 text-right font-semibold ${
-                              row.windowCarryReturnPct >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                              row.status === 'FLAT'
+                                ? 'text-slate-500'
+                                : row.windowCarryReturnPct >= 0
+                                  ? 'text-emerald-400'
+                                  : 'text-rose-400'
                             }`}
                           >
                             {formatPct(row.windowCarryReturnPct)}
@@ -655,8 +674,8 @@ export function RiskStressLab({
                               className={`inline-block rounded-full border px-2 py-0.5 text-[9.5px] font-semibold ${
                                 row.status === 'HIT'
                                   ? 'border-emerald-500/35 bg-emerald-500/15 text-emerald-300'
-                                  : row.status === 'OPEN'
-                                    ? 'border-sky-500/35 bg-sky-500/15 text-sky-300'
+                                  : row.status === 'FLAT'
+                                    ? 'border-slate-600/40 bg-slate-800/70 text-slate-400'
                                     : row.status === 'DRIFT'
                                       ? 'border-amber-500/35 bg-amber-500/15 text-amber-300'
                                       : 'border-rose-500/35 bg-rose-500/15 text-rose-300'
@@ -675,8 +694,8 @@ export function RiskStressLab({
               <div className="mt-3 flex items-start gap-2 rounded-lg border border-slate-800 bg-[#080B10]/70 p-2.5 text-[11px] text-slate-400">
                 <AlertOctagon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-400" />
                 <span>
-                  Hourly funding is replayed via SoDEX&apos;s official formula:{' '}
-                  <code className="text-slate-200">(P + clamp(0.01% − P, ±0.05%)) / 8</code> from live matched Perp &amp; Spot OHLC bars, with intra-bar <code className="text-slate-200">perpHigh</code> checked against tiered maintenance margins.
+                  Close-to-close proxy of SoDEX&apos;s 8h/8 clamp:{' '}
+                  <code className="text-slate-200">(P + clamp(0.01% − P, ±0.05%)) / 8</code> from 4h OHLC closes, not the 5-second impact-notional premium. Live exchange funding is shown above for comparison. On a <code className="text-slate-200">perpHigh</code> breach, spot flattens to cash and subsequent slices mark <code className="text-slate-200">FLAT</code>.
                 </span>
               </div>
             </div>
@@ -774,10 +793,10 @@ export function RiskStressLab({
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h3 className="text-sm font-semibold text-slate-100">
-                    Simulated Portfolio Equity Envelopes (1,000 Paths)
+                    Simulated Portfolio Equity Envelopes (1,000 Paths — Model Only, Not Settled Fills)
                   </h3>
                   <p className="text-[11px] text-slate-400">
-                    Initial Capital {formatUsd(mcResult.totalCapitalUsd, 0)} ({formatCompactUsd(notionalUsd)} Spot +{' '}
+                    Model simulation (not settled exchange fills) • Initial Capital {formatUsd(mcResult.totalCapitalUsd, 0)} ({formatCompactUsd(notionalUsd)} Spot +{' '}
                     {formatCompactUsd(notionalUsd / leverage)} Perp Margin)
                   </p>
                 </div>

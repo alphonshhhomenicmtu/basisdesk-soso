@@ -239,14 +239,17 @@ export function OverviewDesk({
         </div>
       </div>
 
-      {/* Row 2: AI Quant Desk Signal Synthesizer Banner */}
+      {/* Row 2: Rules-Based Desk Brief Banner */}
       <div className="panel-surface relative overflow-hidden rounded-xl border-sky-500/25 p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-md bg-sky-500/15 px-2 py-0.5 text-[11px] font-semibold text-sky-300 border border-sky-500/30">
                 <Sparkles className="h-3 w-3" />
-                Autonomous Quant Desk Brief
+                Rules-Based Desk Brief
+              </span>
+              <span className="font-mono text-[10.5px] text-slate-500">
+                ETF 5D flow + SoDEX funding breadth
               </span>
               <span
                 className={`rounded-md px-2 py-0.5 font-mono text-[11px] font-semibold ${
@@ -259,8 +262,12 @@ export function OverviewDesk({
               >
                 {deskBrief.regime.replaceAll('_', ' ')}
               </span>
-              <span className="font-mono text-xs text-slate-400 tabular-nums">
-                Conviction <strong className="text-slate-100">{deskBrief.convictionScore}/100</strong>
+              <span
+                className="cursor-help font-mono text-xs text-slate-400 tabular-nums underline decoration-slate-600 decoration-dotted underline-offset-2"
+                title={deskBrief.scoreFormula}
+              >
+                Rule Score <strong className="text-slate-100">{deskBrief.convictionScore}/100</strong>{' '}
+                <span className="text-[10px] text-slate-500">(82/68/49 + APY)</span>
               </span>
             </div>
 

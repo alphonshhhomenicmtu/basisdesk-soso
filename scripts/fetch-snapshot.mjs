@@ -66,7 +66,7 @@ const L2_TARGETS = {
 };
 
 // Curated reference baseline used ONLY when SOSOVALUE_API_KEY is unset during snapshot generation.
-// Matches the exact SoSoValue Open API v1 JSON schemas so switching to LIVE DIRECT BYOK is seamless.
+// Matches the exact SoSoValue Open API v1 JSON schemas so switching to LIVE DIRECT BYOK requires no schema translation.
 const REFERENCE_SOSO_DATA = {
   mode: 'SNAPSHOT',
   note: 'Reference SoSoValue ETF & macro dataset matching Open API v1 schema. Supply x-soso-api-key in Telemetry Settings or GitHub Secrets for live direct pulls.',

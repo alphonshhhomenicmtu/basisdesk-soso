@@ -12,7 +12,7 @@ import {
   fetchLiveSodexMarkets,
   fetchLiveSoSoValueDirect,
   fetchLiveValueChainRpc,
-  fetchSodexAccountState,
+  fetchSodexAccountStates,
   loadBaselineSnapshot,
   SODEX_PERPS_WS,
   SODEX_REST_BASE,
@@ -58,7 +58,7 @@ const SEED_BLOTTER: PaperExecutionOrder[] = [
     liquidationBufferPct: 32.1,
     guardrailStatus: 'PASS',
     status: 'OPEN',
-    notes: 'Core BTC delta-neutral carry harvest (3x short perp hedged against vBTC spot)',
+    notes: 'Core BTC delta-neutral carry paper entry (3x short perp hedged against vBTC spot)',
   },
   {
     id: 'PAPER-2026-002',
@@ -139,9 +139,11 @@ export function useDeskData(selectedPerpSymbol: string) {
   );
   const [walletConnecting, setWalletConnecting] = useState(false);
   const [walletError, setWalletError] = useState<string | null>(null);
-  const [sodexAccountIds, setSodexAccountIds] = useState<Record<SodexNetwork, number | null>>({
-    testnet: null,
-    mainnet: null,
+  const [sodexAccountIds, setSodexAccountIds] = useState<
+    Record<SodexNetwork, { spot: number | null; perps: number | null }>
+  >({
+    testnet: { spot: null, perps: null },
+    mainnet: { spot: null, perps: null },
   });
 
   const [telemetry, setTelemetry] = useState<Record<FeedTelemetry['id'], FeedTelemetry>>({
@@ -510,22 +512,20 @@ export function useDeskData(selectedPerpSymbol: string) {
       setWalletAddress(res.address);
       setWalletChainId(res.chainId);
       setWalletProviderLabel(res.providerLabel);
-      // Resolve live public SoDEX accountIDs on both testnet & mainnet (unauthenticated public state read)
-      const [testState, mainState] = await Promise.all([
-        fetchSodexAccountState('testnet', res.address).catch(() => ({
-          activated: false,
-          accountID: null,
-          availableMarginUsd: null,
+      // Resolve live public SoDEX Spot & Perps accountIDs on both testnet & mainnet
+      const [testStates, mainStates] = await Promise.all([
+        fetchSodexAccountStates('testnet', res.address).catch(() => ({
+          spot: { activated: false, accountID: null },
+          perps: { activated: false, accountID: null, availableMarginUsd: null },
         })),
-        fetchSodexAccountState('mainnet', res.address).catch(() => ({
-          activated: false,
-          accountID: null,
-          availableMarginUsd: null,
+        fetchSodexAccountStates('mainnet', res.address).catch(() => ({
+          spot: { activated: false, accountID: null },
+          perps: { activated: false, accountID: null, availableMarginUsd: null },
         })),
       ]);
       setSodexAccountIds({
-        testnet: testState.accountID,
-        mainnet: mainState.accountID,
+        testnet: { spot: testStates.spot.accountID, perps: testStates.perps.accountID },
+        mainnet: { spot: mainStates.spot.accountID, perps: mainStates.perps.accountID },
       });
       setWalletConnecting(false);
       return true;
@@ -540,7 +540,10 @@ export function useDeskData(selectedPerpSymbol: string) {
     setWalletAddress(null);
     setWalletChainId(null);
     setWalletError(null);
-    setSodexAccountIds({ testnet: null, mainnet: null });
+    setSodexAccountIds({
+      testnet: { spot: null, perps: null },
+      mainnet: { spot: null, perps: null },
+    });
   }, []);
 
   const connectSoSoValueKey = useCallback(

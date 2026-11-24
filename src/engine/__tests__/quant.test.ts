@@ -238,5 +238,8 @@ describe('1,000-Path Deterministic Monte Carlo Liquidation Stress Engine', () =>
     expect(brief.regime).toBe('RISK_ON_CARRY');
     expect(brief.etfPositiveStreakDays).toBe(2);
     expect(brief.convictionScore).toBeGreaterThanOrEqual(80);
+    expect(brief.scoreFormula).toContain('base 82');
+    expect(brief.headline).not.toMatch(/harvest|autonomous|cockpit/i);
+    expect(brief.headline).toContain('5D ETF');
   });
 });

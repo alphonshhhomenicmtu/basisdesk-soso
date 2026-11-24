@@ -182,7 +182,7 @@ export async function fetchLiveSodexKlines30d(
 }
 
 /**
- * Queries public unauthenticated SoDEX account state to resolve accountID (`data.aid`) for a wallet address.
+ * Queries public unauthenticated SoDEX Perps account state to resolve accountID (`data.aid`).
  */
 export async function fetchSodexAccountState(
   network: SodexNetwork,
@@ -202,6 +202,98 @@ export async function fetchSodexAccountState(
     };
   }
   return { activated: false, accountID: null, availableMarginUsd: null };
+}
+
+/**
+ * Queries public unauthenticated SoDEX Spot account state to resolve spot accountID (`data.aid`).
+ */
+export async function fetchSodexSpotAccountState(
+  network: SodexNetwork,
+  walletAddress: string,
+): Promise<{ activated: boolean; accountID: number | null }> {
+  const base = network === 'mainnet' ? SODEX_REST_BASE : SODEX_TESTNET_REST_BASE;
+  const { data } = await fetchJsonWithTimeout<{
+    code?: number;
+    data?: { aid?: number };
+  }>(`${base}/spot/accounts/${encodeURIComponent(walletAddress)}/state`, {}, 6000);
+
+  if (data?.code === 0 && data.data && typeof data.data.aid === 'number' && data.data.aid > 0) {
+    return {
+      activated: true,
+      accountID: data.data.aid,
+    };
+  }
+  return { activated: false, accountID: null };
+}
+
+/**
+ * Queries public SoDEX builder fee summary for a wallet address (`GET /api/v1/user/{address}/builder/summary`).
+ */
+export async function fetchSodexBuilderSummary(
+  network: SodexNetwork,
+  walletAddress: string,
+): Promise<{
+  registered: boolean;
+  name: string | null;
+  builderCode: string | null;
+  tradeVolumeUsd: number;
+  tradeCount: number;
+  builderFeeUsd: number;
+} | null> {
+  const base = network === 'mainnet' ? SODEX_REST_BASE : SODEX_TESTNET_REST_BASE;
+  const { data } = await fetchJsonWithTimeout<{
+    code?: number;
+    data?: {
+      name?: string;
+      builderCode?: string | number;
+      tradeVolume?: string;
+      tradeCount?: string | number;
+      builderFee?: string;
+    } | null;
+  }>(`${base}/user/${encodeURIComponent(walletAddress)}/builder/summary`, {}, 6000);
+
+  if (data?.code !== 0 || !data.data) {
+    return {
+      registered: false,
+      name: null,
+      builderCode: null,
+      tradeVolumeUsd: 0,
+      tradeCount: 0,
+      builderFeeUsd: 0,
+    };
+  }
+  return {
+    registered: true,
+    name: data.data.name ?? null,
+    builderCode: data.data.builderCode !== undefined ? String(data.data.builderCode) : null,
+    tradeVolumeUsd: Number(data.data.tradeVolume ?? 0),
+    tradeCount: Number(data.data.tradeCount ?? 0),
+    builderFeeUsd: Number(data.data.builderFee ?? 0),
+  };
+}
+
+/**
+ * Resolves both Spot and Perps SoDEX accountIDs in parallel for a connected wallet address.
+ */
+export async function fetchSodexAccountStates(
+  network: SodexNetwork,
+  walletAddress: string,
+): Promise<{
+  spot: { activated: boolean; accountID: number | null };
+  perps: { activated: boolean; accountID: number | null; availableMarginUsd: number | null };
+}> {
+  const [spot, perps] = await Promise.all([
+    fetchSodexSpotAccountState(network, walletAddress).catch(() => ({
+      activated: false,
+      accountID: null,
+    })),
+    fetchSodexAccountState(network, walletAddress).catch(() => ({
+      activated: false,
+      accountID: null,
+      availableMarginUsd: null,
+    })),
+  ]);
+  return { spot, perps };
 }
 
 /**

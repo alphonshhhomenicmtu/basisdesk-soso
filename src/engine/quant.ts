@@ -144,7 +144,8 @@ export interface DeskSignalThesis {
   rationale: string;
   recommendedPair: string;
   expectedNetApyPct: number;
-  convictionScore: number; // 0-100
+  convictionScore: number; // 0-100 deterministic rule score
+  scoreFormula: string;
   etfFlow5dUsd: number;
   etfPositiveStreakDays: number;
   topCarrySymbol: string;
@@ -303,9 +304,19 @@ export function analyzeOrderBook(
 export function resolveMaintenanceMargin(
   notionalUsd: number,
   tiers: PerpMarginTier[],
-): { maintenanceMarginUsd: number; maintenanceMarginRate: number; tierMaxLeverage: number } {
+): {
+  maintenanceMarginUsd: number;
+  maintenanceMarginRate: number;
+  maintenanceDeduction: number;
+  tierMaxLeverage: number;
+} {
   if (!tiers.length || notionalUsd <= 0) {
-    return { maintenanceMarginUsd: notionalUsd * 0.0125, maintenanceMarginRate: 0.0125, tierMaxLeverage: 20 };
+    return {
+      maintenanceMarginUsd: notionalUsd * 0.0125,
+      maintenanceMarginRate: 0.0125,
+      maintenanceDeduction: 0,
+      tierMaxLeverage: 20,
+    };
   }
 
   const sorted = [...tiers].sort(
@@ -320,6 +331,7 @@ export function resolveMaintenanceMargin(
   return {
     maintenanceMarginUsd,
     maintenanceMarginRate: mmr,
+    maintenanceDeduction: deduction,
     tierMaxLeverage: matched.maxLeverage,
   };
 }
@@ -774,26 +786,28 @@ export function synthesizeDeskBrief(
     riskFlags.push(`Elevated spot-perp basis dispersion (${topOpp.basisBps.toFixed(1)} bps)`);
   }
   if (positiveBreadth < 0.5) {
-    riskFlags.push('Mixed hourly funding across ValueChain perps — prefer maker limit fills');
+    riskFlags.push('Mixed hourly funding across ValueChain perps; prefer maker limit fills');
   }
   if (riskFlags.length === 0) {
-    riskFlags.push('Healthy L2 depth & positive ETF inflow impulse support 3x hedged carry');
+    riskFlags.push('Positive L2 depth and 5-day ETF inflows support 3x hedged carry');
   }
 
   const convictionBase =
     regime === 'RISK_ON_CARRY' ? 82 : regime === 'SELECTIVE_BASIS' ? 68 : 49;
-  const convictionScore = Math.min(
-    96,
-    Math.max(35, Math.round(convictionBase + Math.min(12, Math.max(-10, expectedNetApyPct * 0.5)))),
-  );
+  const apyNudge = Math.min(12, Math.max(-10, expectedNetApyPct * 0.5));
+  const convictionScore = Math.min(96, Math.max(35, Math.round(convictionBase + apyNudge)));
+  const scoreFormula = `Rule score = clamp(base ${convictionBase} [${regime}] + clamp(0.5 * ${expectedNetApyPct.toFixed(2)}% net APY = ${apyNudge >= 0 ? '+' : ''}${apyNudge.toFixed(1)}, -10..+12), 35..96). Deterministic thresholds; no LLM call.`;
 
   const flowLabel = `${etfFlow5dUsd >= 0 ? '+' : '-'}$${(Math.abs(etfFlow5dUsd) / 1e6).toFixed(1)}M`;
+  const basisLabel = topOpp
+    ? `${topOpp.basisBps >= 0 ? '+' : ''}${topOpp.basisBps.toFixed(1)} bps`
+    : '0.0 bps';
   const headline =
     regime === 'RISK_ON_CARRY'
-      ? `Positive Institutional Inflow Regime (${flowLabel} 5D ETF) — Harvest ${topCarrySymbol} Carry`
+      ? `5D ETF ${flowLabel} | ${positiveCount}/${opportunities.length} perps positive funding | Top: ${topCarrySymbol} (${expectedNetApyPct.toFixed(2)}% net APY, ${basisLabel} basis)`
       : regime === 'SELECTIVE_BASIS'
-        ? `Selective Carry Regime (${flowLabel} 5D ETF) — Target Maker-Only ${topCarrySymbol} Spread`
-        : `Defensive Basis Regime (${flowLabel} 5D ETF) — Favor USSI / Low-Leverage Hedging`;
+        ? `5D ETF ${flowLabel} | ${positiveCount}/${opportunities.length} perps positive funding | Maker-only candidate: ${topCarrySymbol} (${expectedNetApyPct.toFixed(2)}% net APY, ${basisLabel} basis)`
+        : `5D ETF ${flowLabel} | ${positiveCount}/${opportunities.length} perps positive funding | Defensive sizing: ${topCarrySymbol} (${expectedNetApyPct.toFixed(2)}% net APY) or USSI`;
 
   const rationale = topOpp
     ? `SoSoValue US Spot BTC+ETH ETF flows total ${flowLabel} over 5 sessions (${streak}d BTC inflow streak). On SoDEX Mainnet, ${positiveCount}/${opportunities.length} paired perp markets print positive hourly funding, led by ${topOpp.perpSymbol} at ${topOpp.annualizedFundingPct.toFixed(2)}% annualized (${topOpp.netCarryApyPct.toFixed(2)}% net carry APY on 3x hedged capital with ${topOpp.basisBps.toFixed(1)} bps live basis).`
@@ -807,6 +821,7 @@ export function synthesizeDeskBrief(
     recommendedPair: topCarrySymbol,
     expectedNetApyPct,
     convictionScore,
+    scoreFormula,
     etfFlow5dUsd,
     etfPositiveStreakDays: streak,
     topCarrySymbol,

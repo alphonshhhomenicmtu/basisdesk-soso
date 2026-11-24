@@ -59,34 +59,34 @@ const VERIFICATION_STEPS: Array<{
     rubric: 'User Value (30%)',
     title: 'Inspect Live ETF Flows + Carry Matrix',
     instruction:
-      'Open Overview Desk to inspect the Autonomous Quant Desk Brief fusing SoSoValue 5D ETF momentum with live matched SoDEX Spot-Perp hourly funding rankings.',
+      'Open Overview Desk to inspect the rules-based desk brief combining SoSoValue 5D ETF flows with live matched SoDEX Spot-Perp hourly funding rankings.',
     actionLabel: 'Open Overview',
     actionType: 'overview',
   },
   {
     id: 'step-3',
     window: '20–32s',
-    rubric: 'Execution & SoDEX (25%)',
-    title: 'Sign & Verify Real SoDEX EIP-712 Intent',
+    rubric: 'Functionality (25%)',
+    title: 'Inspect & Verify SoDEX EIP-712 Signer',
     instruction:
-      'Launch the SoDEX EIP-712 Order Signer modal. Inspect exact ExchangeAction / batchNewOrder domain, payloadHash, nonce, mainnet safety gate, and sign via MetaMask or 1-click local cryptographic dry-run.',
+      'Launch the SoDEX EIP-712 Order Signer modal. Inspect exact ExchangeAction / batchNewOrder domain, payloadHash, distinct monotonic nonces per hedge leg, live Spot/Perps accountID lookup, and mainnet safety gate.',
     actionLabel: 'Launch EIP-712 Signer',
     actionType: 'eip712',
   },
   {
     id: 'step-4',
     window: '32–44s',
-    rubric: 'Quant Rigor (20%)',
-    title: 'Replay 30-Day Real SoDEX Klines Backtest',
+    rubric: 'Logic (20%)',
+    title: 'Audit 30-Day Klines Proxy Replay & Margin Stress',
     instruction:
-      'Open Risk & Backtest to verify 180 live 4h Perp + Spot SoDEX candles replaying delta-neutral carry vs. Spot Buy-and-Hold, Sharpe/Sortino, HIT/STOP/DRIFT log, and intra-bar liquidation checks.',
+      'Open Risk & Backtest to verify matched 4h Perp + Spot SoDEX candles, close-basis funding proxy vs. live exchange rate, pre-penalty wick liquidation checks, and in-sample 5-day slices.',
     actionLabel: 'Open 30d Backtest',
     actionType: 'risk',
   },
   {
     id: 'step-5',
     window: '44–52s',
-    rubric: 'Microstructure (20%)',
+    rubric: 'UX (10%)',
     title: 'Inspect 500ms L2 Depth & Impact Notional',
     instruction:
       'Open Basis & L2 Book to inspect streaming 500ms SoDEX orderbooks, official 200×MaxLev impact notional premium, and L2 VWAP slippage walking.',
@@ -96,8 +96,8 @@ const VERIFICATION_STEPS: Array<{
   {
     id: 'step-6',
     window: '52–60s',
-    rubric: 'SSI & ValueChain (15%)',
-    title: 'Audit SSI Protocol Rebalancer & Gas',
+    rubric: 'Functionality • SSI',
+    title: 'Audit SSI Protocol Rebalancer & ValueChain Gas',
     instruction:
       'Open SSI Rebalancer to compare live MAG7.ssi / DEFI.ssi / USSI SoDEX Spot prices vs. iNAV, adjust drift buffer bands, and stage a multi-leg batchNewOrder basket.',
     actionLabel: 'Open SSI Rebalancer',
@@ -145,9 +145,11 @@ export function JudgeDiagDesk({
     setSelfTesting(true);
     try {
       const start = performance.now();
+      // Local unit-style ecrecover check with explicit synthetic fixture ID (never submitted to gateway)
+      const LOCAL_SELF_TEST_FIXTURE_ID = 999999;
       const intent = buildSpotBatchNewOrderIntent({
         network: 'testnet',
-        accountID: 1001,
+        accountID: LOCAL_SELF_TEST_FIXTURE_ID,
         orders: [
           {
             symbolID: 1,
@@ -381,13 +383,13 @@ export function JudgeDiagDesk({
 
             {selfTestResult && (
               <div className="rounded-lg border border-emerald-500/35 bg-emerald-500/10 p-3 font-mono text-[10.5px] text-emerald-200">
-                <div className="flex items-center justify-between font-sans text-xs font-semibold text-emerald-300">
-                  <span>ecrecover Verified ({selfTestResult.durationMs} ms)</span>
-                  <span>0x01 || 65B ECDSA</span>
+                  <div className="flex items-center justify-between font-sans text-xs font-semibold text-emerald-300">
+                  <span>Local ecrecover Match ({selfTestResult.durationMs} ms)</span>
+                  <span>0x01 || 65B • Unregistered Fixture</span>
                 </div>
                 <div className="mt-1.5 space-y-1 break-all text-slate-200">
                   <div>
-                    <span className="text-slate-400">signer: </span>
+                    <span className="text-slate-400">ephemeral signer: </span>
                     {selfTestResult.envelope.signerAddress}
                   </div>
                   <div>
@@ -397,6 +399,9 @@ export function JudgeDiagDesk({
                   <div>
                     <span className="text-slate-400">X-API-Sign: </span>
                     {selfTestResult.envelope.typedWireSignature.slice(0, 42)}...
+                  </div>
+                  <div className="pt-1 font-sans text-[10.5px] text-slate-400">
+                    Local schema check only (unregistered ephemeral key and synthetic fixture accountID; not submittable to SoDEX gateway).
                   </div>
                 </div>
               </div>

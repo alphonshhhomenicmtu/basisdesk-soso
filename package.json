@@ -1,8 +1,8 @@
 {
   "name": "basisdesk",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "BasisDesk — Autonomous One-Person On-Chain Quant & Risk Terminal powered by SoSoValue, SoDEX, ValueChain, and SSI Protocol",
+  "description": "BasisDesk — One-Person On-Chain Quant & Risk Terminal built on SoSoValue, SoDEX, ValueChain, and SSI Protocol",
   "type": "module",
   "scripts": {
     "dev": "vite",
