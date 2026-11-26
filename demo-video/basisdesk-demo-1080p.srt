@@ -1,0 +1,88 @@
+1
+00:00:00,400 --> 00:00:05,258
+Solo carry trading usually takes five tabs.
+BasisDesk puts the whole desk in one terminal.
+
+2
+00:00:05,358 --> 00:00:11,084
+Built on SoSoValue, SoDEX, ValueChain, and SSI Protocol —
+every feed carries an explicit, honest telemetry badge.
+
+3
+00:00:11,144 --> 00:00:18,335
+Live SoDEX WS · ValueChain Chain 286623 RPC (2s finality, block #17,316,539)
+and clear SNAPSHOT tags whenever no SoSoValue API key is loaded.
+
+4
+00:00:18,395 --> 00:00:27,842
+Desk Brief pairs +$1.04B 5D ETF flows with live funding across
+107 perps & 48 spot pairs — led by AVAX-USD at +7.17% net carry APY.
+
+5
+00:00:28,062 --> 00:00:31,164
+Click Analyze on any pair to open the live Basis & L2 Book Desk.
+
+6
+00:00:31,204 --> 00:00:39,737
+BTC-USD 500ms WebSocket depth: 0.17 bps spread, live matching-engine tape,
+and SoDEX's official 200× MaxLev Impact Notional premium.
+
+7
+00:00:39,797 --> 00:00:46,203
+Depth walking prices execution slippage across $1.71M top-15 liquidity —
+paired with the ValueChain vBTC_vUSDC Spot CLOB at +5.1 bps live basis.
+
+8
+00:00:46,263 --> 00:00:53,443
+Slide size, leverage, or horizon for live Net Carry APY (+2.28%),
+exact SoDEX maker fees, 10.1-day breakeven, and tiered liquidation buffer.
+
+9
+00:00:53,663 --> 00:00:59,180
+Delta-neutral is not liquidation-proof.
+Basis spikes squeeze short margin before spot gains can bail you out.
+
+10
+00:00:59,240 --> 00:01:09,860
+1,000-path seeded Monte Carlo · Basis Blowout (+180 bps) at 6x leverage:
+99% CVaR reaches -$21,125 and Perp Liquidation Probability hits 48.0%.
+
+11
+00:01:09,920 --> 00:01:15,341
+Every path checks live SoDEX maintenance tiers (1.25% MMR ≤ $4M) —
+mapping P5–P95 equity envelopes, VaR tails, and staged unwind thresholds.
+
+12
+00:01:15,561 --> 00:01:26,742
+Live SoDEX spot prices for MAG7.ssi, DEFI.ssi & USSI vs. implied iNAV —
+flagging MAG7.ssi at a -36.6 bps discount (Buy Spot & Redeem).
+
+13
+00:01:26,802 --> 00:01:34,832
+Modeled on AssetRebalancer.sol: a ±0.8% drift buffer holds 4 assets IN BUFFER,
+trading only BTC, ETH & XRP — cutting turnover to 1.69% ($1,686).
+
+14
+00:01:34,892 --> 00:01:41,092
+Live ValueChain Chain 286623 gas (0.00000084 SOSO) plus
+exact AssetRebalancer.sol 10^8 tokenset calldata preview.
+
+15
+00:01:41,312 --> 00:01:48,128
+Five automated pre-trade guardrails audit leverage, liquidation buffer,
+L2 slippage, concentration, and 99% VaR budget before staging.
+
+16
+00:01:48,188 --> 00:01:53,870
+Two-step zero-custody confirmation logs to the live MTM Paper Blotter —
+with optional BYOK SoSoValue API keys kept in browser memory only.
+
+17
+00:01:53,950 --> 00:01:59,989
+16/16 Vitest unit tests passing · strict TypeScript verification ·
+live GitHub Pages static deployment backed by hourly snapshot CI.
+
+18
+00:02:00,089 --> 00:02:05,751
+Zero custody. Honest telemetry.
+Quant discipline for a one-person on-chain desk. BasisDesk.

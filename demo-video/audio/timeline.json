@@ -1,0 +1,340 @@
+{
+  "voice": "en-US-BrianNeural",
+  "rate": "+14%",
+  "total_duration": 126.521,
+  "timeline_duration": 126.521,
+  "chapters": [
+    {
+      "id": 1,
+      "short": "01 Overview",
+      "title": "Overview Desk & Telemetry",
+      "start": 0.0,
+      "end": 28.0625
+    },
+    {
+      "id": 2,
+      "short": "02 Basis & L2",
+      "title": "Live SoDEX 500ms L2 & Carry",
+      "start": 28.0625,
+      "end": 53.6629
+    },
+    {
+      "id": 3,
+      "short": "03 Stress Lab",
+      "title": "1,000-Path Monte Carlo Risk",
+      "start": 53.6629,
+      "end": 75.561
+    },
+    {
+      "id": 4,
+      "short": "04 SSI Protocol",
+      "title": "SSI Rebalancer & ValueChain",
+      "start": 75.561,
+      "end": 101.3124
+    },
+    {
+      "id": 5,
+      "short": "05 Controls & Ship",
+      "title": "Risk Gate, Blotter & Deploy",
+      "start": 101.3124,
+      "end": 126.521
+    }
+  ],
+  "cues": [
+    {
+      "id": "cue_01",
+      "chapter": 1,
+      "scene": "intro_title",
+      "start": 0.4,
+      "end": 5.1781,
+      "duration": 4.7781,
+      "pause_after": 0.18,
+      "tts": "Solo carry trading takes five tabs. BasisDesk puts the whole desk in one terminal.",
+      "sub_lines": [
+        "Solo carry trading usually takes five tabs.",
+        "BasisDesk puts the whole desk in one terminal."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_01.wav"
+    },
+    {
+      "id": "cue_02",
+      "chapter": 1,
+      "scene": "overview_top",
+      "start": 5.3581,
+      "end": 11.0039,
+      "duration": 5.6458,
+      "pause_after": 0.14,
+      "tts": "Built on SoSoValue, SoDEX, ValueChain, and SSI Protocol, every feed has an honest badge.",
+      "sub_lines": [
+        "Built on SoSoValue, SoDEX, ValueChain, and SSI Protocol \u2014",
+        "every feed carries an explicit, honest telemetry badge."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_02.wav"
+    },
+    {
+      "id": "cue_03",
+      "chapter": 1,
+      "scene": "overview_telemetry_zoom",
+      "start": 11.1439,
+      "end": 18.2548,
+      "duration": 7.1109,
+      "pause_after": 0.14,
+      "tts": "Live SoDEX WebSockets, ValueChain Chain 286623 RPC with two-second finality, and clear snapshot tags.",
+      "sub_lines": [
+        "Live SoDEX WS \u00b7 ValueChain Chain 286623 RPC (2s finality, block #17,316,539)",
+        "and clear SNAPSHOT tags whenever no SoSoValue API key is loaded."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_03.wav"
+    },
+    {
+      "id": "cue_04",
+      "chapter": 1,
+      "scene": "overview_brief_matrix",
+      "start": 18.3948,
+      "end": 27.7625,
+      "duration": 9.3677,
+      "pause_after": 0.3,
+      "tts": "The Desk Brief pairs 1.04 billion in ETF flows with funding across 107 perps and 48 spot pairs. AVAX leads at 7.17 percent.",
+      "sub_lines": [
+        "Desk Brief pairs +$1.04B 5D ETF flows with live funding across",
+        "107 perps & 48 spot pairs \u2014 led by AVAX-USD at +7.17% net carry APY."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_04.wav"
+    },
+    {
+      "id": "cue_05",
+      "chapter": 2,
+      "scene": "basis_full",
+      "start": 28.0625,
+      "end": 31.0839,
+      "duration": 3.0214,
+      "pause_after": 0.12,
+      "tts": "Click Analyze on any pair for the Basis and L2 Book.",
+      "sub_lines": [
+        "Click Analyze on any pair to open the live Basis & L2 Book Desk."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_05.wav"
+    },
+    {
+      "id": "cue_06",
+      "chapter": 2,
+      "scene": "basis_l2_zoom",
+      "start": 31.2039,
+      "end": 39.6566,
+      "duration": 8.4527,
+      "pause_after": 0.14,
+      "tts": "On BTC-USD, 500-millisecond depth streams a 0.17 basis-point spread, live tape, and 200x Impact Notional.",
+      "sub_lines": [
+        "BTC-USD 500ms WebSocket depth: 0.17 bps spread, live matching-engine tape,",
+        "and SoDEX's official 200\u00d7 MaxLev Impact Notional premium."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_06.wav"
+    },
+    {
+      "id": "cue_07",
+      "chapter": 2,
+      "scene": "basis_spot_zoom",
+      "start": 39.7966,
+      "end": 46.1226,
+      "duration": 6.326,
+      "pause_after": 0.14,
+      "tts": "Depth walking prices slippage across 1.71 million against the vBTC spot leg at 5.1 basis points.",
+      "sub_lines": [
+        "Depth walking prices execution slippage across $1.71M top-15 liquidity \u2014",
+        "paired with the ValueChain vBTC_vUSDC Spot CLOB at +5.1 bps live basis."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_07.wav"
+    },
+    {
+      "id": "cue_08",
+      "chapter": 2,
+      "scene": "basis_carry_zoom",
+      "start": 46.2626,
+      "end": 53.3629,
+      "duration": 7.1003,
+      "pause_after": 0.3,
+      "tts": "Slide size, leverage, or horizon for net carry APY, maker fees, 10.1-day breakeven, and liquidation price.",
+      "sub_lines": [
+        "Slide size, leverage, or horizon for live Net Carry APY (+2.28%),",
+        "exact SoDEX maker fees, 10.1-day breakeven, and tiered liquidation buffer."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_08.wav"
+    },
+    {
+      "id": "cue_09",
+      "chapter": 3,
+      "scene": "stress_full",
+      "start": 53.6629,
+      "end": 59.1004,
+      "duration": 5.4375,
+      "pause_after": 0.14,
+      "tts": "Delta-neutral is not liquidation-proof. Basis spikes squeeze short margin before spot helps.",
+      "sub_lines": [
+        "Delta-neutral is not liquidation-proof.",
+        "Basis spikes squeeze short margin before spot gains can bail you out."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_09.wav"
+    },
+    {
+      "id": "cue_10",
+      "chapter": 3,
+      "scene": "stress_metrics_zoom",
+      "start": 59.2404,
+      "end": 69.7797,
+      "duration": 10.5393,
+      "pause_after": 0.14,
+      "tts": "Our 1,000-path Monte Carlo lab tests a 180 basis-point blowout at 6x: minus 21,125 99-percent C-Var and 48 percent liquidation risk.",
+      "sub_lines": [
+        "1,000-path seeded Monte Carlo \u00b7 Basis Blowout (+180 bps) at 6x leverage:",
+        "99% CVaR reaches -$21,125 and Perp Liquidation Probability hits 48.0%."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_10.wav"
+    },
+    {
+      "id": "cue_11",
+      "chapter": 3,
+      "scene": "stress_charts_zoom",
+      "start": 69.9197,
+      "end": 75.261,
+      "duration": 5.3412,
+      "pause_after": 0.3,
+      "tts": "Every path checks live SoDEX margin tiers, mapping P5 floors and staged unwind limits.",
+      "sub_lines": [
+        "Every path checks live SoDEX maintenance tiers (1.25% MMR \u2264 $4M) \u2014",
+        "mapping P5\u2013P95 equity envelopes, VaR tails, and staged unwind thresholds."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_11.wav"
+    },
+    {
+      "id": "cue_12",
+      "chapter": 4,
+      "scene": "ssi_top",
+      "start": 75.561,
+      "end": 86.6619,
+      "duration": 11.101,
+      "pause_after": 0.14,
+      "tts": "In SSI Rebalancer, Mag-7, DeFi, and USSI spot prices track implied I-NAV, flagging Mag-7 at minus 36.6 basis points.",
+      "sub_lines": [
+        "Live SoDEX spot prices for MAG7.ssi, DEFI.ssi & USSI vs. implied iNAV \u2014",
+        "flagging MAG7.ssi at a -36.6 bps discount (Buy Spot & Redeem)."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_12.wav"
+    },
+    {
+      "id": "cue_13",
+      "chapter": 4,
+      "scene": "ssi_drift_zoom",
+      "start": 86.8019,
+      "end": 94.752,
+      "duration": 7.9501,
+      "pause_after": 0.14,
+      "tts": "Modeled on AssetRebalancer dot sol, a 0.8 percent buffer holds four assets idle, cutting turnover to 1.69 percent.",
+      "sub_lines": [
+        "Modeled on AssetRebalancer.sol: a \u00b10.8% drift buffer holds 4 assets IN BUFFER,",
+        "trading only BTC, ETH & XRP \u2014 cutting turnover to 1.69% ($1,686)."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_13.wav"
+    },
+    {
+      "id": "cue_14",
+      "chapter": 4,
+      "scene": "ssi_calldata_zoom",
+      "start": 94.892,
+      "end": 101.0124,
+      "duration": 6.1204,
+      "pause_after": 0.3,
+      "tts": "It prices live Chain 286623 SOSO gas with a 10-to-the-8 tokenset calldata preview.",
+      "sub_lines": [
+        "Live ValueChain Chain 286623 gas (0.00000084 SOSO) plus",
+        "exact AssetRebalancer.sol 10^8 tokenset calldata preview."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_14.wav"
+    },
+    {
+      "id": "cue_15",
+      "chapter": 5,
+      "scene": "risk_gate_zoom",
+      "start": 101.3124,
+      "end": 108.048,
+      "duration": 6.7356,
+      "pause_after": 0.14,
+      "tts": "Five pre-trade guardrails audit leverage, liquidation buffer, slippage, concentration, and 99 percent value-at-risk.",
+      "sub_lines": [
+        "Five automated pre-trade guardrails audit leverage, liquidation buffer,",
+        "L2 slippage, concentration, and 99% VaR budget before staging."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_15.wav"
+    },
+    {
+      "id": "cue_16",
+      "chapter": 5,
+      "scene": "blotter_zoom",
+      "start": 108.188,
+      "end": 113.7895,
+      "duration": 5.6014,
+      "pause_after": 0.16,
+      "tts": "Zero-custody confirmation logs to the live Paper Blotter, with memory-only BYOK SoSoValue keys.",
+      "sub_lines": [
+        "Two-step zero-custody confirmation logs to the live MTM Paper Blotter \u2014",
+        "with optional BYOK SoSoValue API keys kept in browser memory only."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_16.wav"
+    },
+    {
+      "id": "cue_17",
+      "chapter": 5,
+      "scene": "outro_proof",
+      "start": 113.9495,
+      "end": 119.9094,
+      "duration": 5.96,
+      "pause_after": 0.18,
+      "tts": "Ships with 16 of 16 Vitest tests passing, GitHub Pages deploy, and hourly snapshot CI.",
+      "sub_lines": [
+        "16/16 Vitest unit tests passing \u00b7 strict TypeScript verification \u00b7",
+        "live GitHub Pages static deployment backed by hourly snapshot CI."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_17.wav"
+    },
+    {
+      "id": "cue_18",
+      "chapter": 5,
+      "scene": "outro_final",
+      "start": 120.0894,
+      "end": 125.6714,
+      "duration": 5.582,
+      "pause_after": 0.85,
+      "tts": "Zero custody. Honest telemetry. Quant discipline for a solo desk. BasisDesk.",
+      "sub_lines": [
+        "Zero custody. Honest telemetry.",
+        "Quant discipline for a one-person on-chain desk. BasisDesk."
+      ],
+      "wav": "/Users/mac/GENAI/agent-earn/akindo/sosovalue-desk/demo-video/audio/cue_18.wav"
+    }
+  ],
+  "loudness": {
+    "pass1": {
+      "input_i": "-21.02",
+      "input_tp": "-7.48",
+      "input_lra": "1.70",
+      "input_thresh": "-31.23",
+      "output_i": "-13.98",
+      "output_tp": "-1.20",
+      "output_lra": "1.50",
+      "output_thresh": "-24.17",
+      "normalization_type": "dynamic",
+      "target_offset": "-0.02"
+    },
+    "final": {
+      "input_i": "-14.03",
+      "input_tp": "-1.20",
+      "input_lra": "1.70",
+      "input_thresh": "-24.24",
+      "output_i": "-14.09",
+      "output_tp": "-1.20",
+      "output_lra": "1.40",
+      "output_thresh": "-24.28",
+      "normalization_type": "dynamic",
+      "target_offset": "0.09"
+    }
+  }
+}

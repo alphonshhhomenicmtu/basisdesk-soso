@@ -1,7 +1,7 @@
 # BasisDesk v2.1 — One-Person On-Chain Quant & Risk Terminal
 
 > **Built for AKINDO WaveHack (Wave 3 — Build Phase II):** *Build Your One-Person On-Chain Finance Business with SoSoValue × ValueChain × SoDEX*
-> **Live App (GitHub Pages):** [https://alphonshhhomenicmtu.github.io/basisdesk-soso/](https://alphonshhhomenicmtu.github.io/basisdesk-soso/) • **Demo Video:** [Watch 1080p Walkthrough on YouTube](https://www.youtube.com/watch?v=a936c4mz-gk) • **Custody:** Non-custodial EIP-712 order builder & local paper blotter (zero silent broadcast) • **Disclaimer:** Analytical tooling, not financial advice.
+> **Live App (GitHub Pages):** [https://alphonshhhomenicmtu.github.io/basisdesk-soso/](https://alphonshhhomenicmtu.github.io/basisdesk-soso/) • **8-Slide Pitch Deck (PDF):** [basisdesk-deck.pdf](https://alphonshhhomenicmtu.github.io/basisdesk-soso/basisdesk-deck.pdf) ([`docs/basisdesk-deck.pdf`](./docs/basisdesk-deck.pdf)) • **Demo Video:** [Watch 1080p Walkthrough on YouTube](https://www.youtube.com/watch?v=a936c4mz-gk) • **Custody:** Non-custodial EIP-712 order builder & local paper blotter (zero silent broadcast) • **Disclaimer:** Analytical tooling, not financial advice.
 
 BasisDesk v2.1 gives a solo trader or independent researcher a direct terminal for delta-neutral basis carry, risk auditing, and SSI basket rebalancing on SoDEX and ValueChain. It combines **browser EIP-712 SoDEX `ExchangeAction` order signing** (Spot `batchNewOrder` and Perps `newOrder`), a **30-day historical SoDEX 4h klines basis-proxy replay engine**, a **live `/diag` telemetry & 60-second verification screen**, **streaming 500ms SoDEX Mainnet orderbooks**, **SoSoValue ETF flow & macro feeds**, **ValueChain Chain 286623 RPC finality**, and **SSI Protocol drift rebalancing**.
 
